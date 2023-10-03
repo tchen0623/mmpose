@@ -1,0 +1,1942 @@
+2023/09/23 22:03:42 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: win32
+    Python: 3.8.18 (default, Sep 11 2023, 13:39:12) [MSC v.1916 64 bit (AMD64)]
+    CUDA available: True
+    numpy_random_seed: 21
+    GPU 0: NVIDIA GeForce RTX 4060 Ti
+    CUDA_HOME: C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8
+    NVCC: Cuda compilation tools, release 11.8, V11.8.89
+    GCC: n/a
+    PyTorch: 2.0.1+cu118
+    PyTorch compiling details: PyTorch built with:
+  - C++ Version: 199711
+  - MSVC 193431937
+  - Intel(R) Math Kernel Library Version 2020.0.2 Product Build 20200624 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.7.3 (Git Hash 6dbeffbae1f23cbbeae17adb7b5b13f1f37c080e)
+  - OpenMP 2019
+  - LAPACK is enabled (usually provided by MKL)
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.8
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_37,code=compute_37
+  - CuDNN 8.7
+  - Magma 2.5.4
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.8, CUDNN_VERSION=8.7.0, CXX_COMPILER=C:/actions-runner/_work/pytorch/pytorch/builder/windows/tmp_bin/sccache-cl.exe, CXX_FLAGS=/DWIN32 /D_WINDOWS /GR /EHsc /w /bigobj /FS -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=OFF, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=OFF, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+    TorchVision: 0.15.2+cu118
+    OpenCV: 4.8.0
+    MMEngine: 0.8.4
+
+Runtime environment:
+    cudnn_benchmark: False
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 21
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2023/09/23 22:03:42 - mmengine - INFO - Config:
+auto_scale_lr=dict(
+    base_batch_size=512)
+backend_args=dict(
+    backend='local')
+base_lr=0.002
+codec=dict(
+    input_size=(
+        256,
+        256,
+        ),
+    normalize=False,
+    sigma=(
+        5.66,
+        5.66,
+        ),
+    simcc_split_ratio=2.0,
+    type='SimCCLabel',
+    use_dark=False)
+custom_hooks=[
+    dict(ema_type='ExpMomentumEMA',
+        momentum=0.0002,
+        priority=49,
+        type='EMAHook',
+        update_buffers=True),
+    dict(switch_epoch=110,
+        switch_pipeline=[
+            dict(backend_args=dict(
+                    backend='local'),
+                type='LoadImage'),
+            dict(type='GetBBoxCenterScale'),
+            dict(direction='horizontal',
+                type='RandomFlip'),
+            dict(type='RandomHalfBody'),
+            dict(rotate_factor=60,
+                scale_factor=[
+                    0.75,
+                    1.25,
+                    ],
+                shift_factor=0.0,
+                type='RandomBBoxTransform'),
+            dict(input_size=(
+                    256,
+                    256,
+                    ),
+                type='TopdownAffine'),
+            dict(type='mmdet.YOLOXHSVRandomAug'),
+            dict(transforms=[
+                    dict(p=0.1,
+                        type='Blur'),
+                    dict(p=0.1,
+                        type='MedianBlur'),
+                    dict(max_height=0.4,
+                        max_holes=1,
+                        max_width=0.4,
+                        min_height=0.2,
+                        min_holes=1,
+                        min_width=0.2,
+                        p=0.5,
+                        type='CoarseDropout'),
+                    ],
+                type='Albumentation'),
+            dict(encoder=dict(
+                    input_size=(
+                        256,
+                        256,
+                        ),
+                    normalize=False,
+                    sigma=(
+                        5.66,
+                        5.66,
+                        ),
+                    simcc_split_ratio=2.0,
+                    type='SimCCLabel',
+                    use_dark=False),
+                type='GenerateTarget'),
+            dict(type='PackPoseInputs'),
+            ],
+        type='mmdet.PipelineSwitchHook'),
+    ]
+data_mode='topdown'
+data_root='D:/BaiduNetdiskDownload/Deepfashion2'
+dataset_type='DeepFashion2Dataset'
+default_hooks=dict(
+    checkpoint=dict(
+        interval=10,
+        max_keep_ckpts=1,
+        rule='greater',
+        save_best='AUC',
+        type='CheckpointHook'),
+    logger=dict(
+        interval=50,
+        type='LoggerHook'),
+    param_scheduler=dict(
+        type='ParamSchedulerHook'),
+    sampler_seed=dict(
+        type='DistSamplerSeedHook'),
+    timer=dict(
+        type='IterTimerHook'),
+    visualization=dict(
+        enable=False,
+        type='PoseVisualizationHook'))
+default_scope='mmpose'
+env_cfg=dict(
+    cudnn_benchmark=False,
+    dist_cfg=dict(
+        backend='nccl'),
+    mp_cfg=dict(
+        mp_start_method='fork',
+        opencv_num_threads=0))
+launcher='none'
+load_from=None
+log_level='INFO'
+log_processor=dict(
+    by_epoch=True,
+    num_digits=6,
+    type='LogProcessor',
+    window_size=50)
+max_epochs=140
+model=dict(
+    backbone=dict(
+        _scope_='mmdet',
+        act_cfg=dict(
+            type='SiLU'),
+        arch='P5',
+        channel_attention=True,
+        deepen_factor=0.67,
+        expand_ratio=0.5,
+        init_cfg=dict(
+            checkpoint='https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth',
+            prefix='backbone.',
+            type='Pretrained'),
+        norm_cfg=dict(
+            type='SyncBN'),
+        out_indices=(
+            4,
+            ),
+        type='CSPNeXt',
+        widen_factor=0.75),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+            ],
+        std=[
+            58.395,
+            57.12,
+            57.375,
+            ],
+        type='PoseDataPreprocessor'),
+    head=dict(
+        decoder=dict(
+            input_size=(
+                256,
+                256,
+                ),
+            normalize=False,
+            sigma=(
+                5.66,
+                5.66,
+                ),
+            simcc_split_ratio=2.0,
+            type='SimCCLabel',
+            use_dark=False),
+        final_layer_kernel_size=7,
+        gau_cfg=dict(
+            act_fn='SiLU',
+            drop_path=0.0,
+            dropout_rate=0.0,
+            expansion_factor=2,
+            hidden_dims=256,
+            pos_enc=False,
+            s=128,
+            use_rel_bias=False),
+        in_channels=768,
+        in_featuremap_size=(
+            8,
+            8,
+            ),
+        input_size=(
+            256,
+            256,
+            ),
+        loss=dict(
+            beta=10.0,
+            label_softmax=True,
+            type='KLDiscretLoss',
+            use_target_weight=True),
+        out_channels=294,
+        simcc_split_ratio=2.0,
+        type='RTMCCHead'),
+    test_cfg=dict(
+        flip_test=True),
+    type='TopdownPoseEstimator')
+optim_wrapper=dict(
+    optimizer=dict(
+        lr=0.002,
+        type='AdamW',
+        weight_decay=0.05),
+    paramwise_cfg=dict(
+        bias_decay_mult=0,
+        bypass_duplicate=True,
+        norm_decay_mult=0),
+    type='OptimWrapper')
+param_scheduler=[
+    dict(begin=0,
+        by_epoch=False,
+        end=1000,
+        start_factor=1e-05,
+        type='LinearLR'),
+    dict(T_max=70,
+        begin=70,
+        by_epoch=True,
+        convert_to_iter_based=True,
+        end=140,
+        eta_min=0.0001,
+        type='CosineAnnealingLR'),
+    ]
+randomness=dict(
+    seed=21)
+resume=False
+stage2_num_epochs=30
+test_cfg=dict(
+    )
+test_dataloader=dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='./validation/deepfashion2_long_sleeved_dress_validation.json',
+        data_mode='topdown',
+        data_prefix=dict(
+            img='validation/image/'),
+        data_root='D:/BaiduNetdiskDownload/Deepfashion2',
+        pipeline=[
+            dict(backend_args=dict(
+                    backend='local'),
+                type='LoadImage'),
+            dict(type='GetBBoxCenterScale'),
+            dict(input_size=(
+                    256,
+                    256,
+                    ),
+                type='TopdownAffine'),
+            dict(type='PackPoseInputs'),
+            ],
+        test_mode=True,
+        type='DeepFashion2Dataset'),
+    drop_last=False,
+    num_workers=10,
+    persistent_workers=True,
+    sampler=dict(
+        round_up=False,
+        shuffle=False,
+        type='DefaultSampler'))
+test_evaluator=[
+    dict(thr=0.2,
+        type='PCKAccuracy'),
+    dict(type='AUC'),
+    dict(type='EPE'),
+    ]
+train_cfg=dict(
+    by_epoch=True,
+    max_epochs=140,
+    val_interval=5)
+train_dataloader=dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='./train/deepfashion2_long_sleeved_dress_train.json',
+        data_mode='topdown',
+        data_prefix=dict(
+            img='train/image/'),
+        data_root='D:/BaiduNetdiskDownload/Deepfashion2',
+        pipeline=[
+            dict(backend_args=dict(
+                    backend='local'),
+                type='LoadImage'),
+            dict(type='GetBBoxCenterScale'),
+            dict(direction='horizontal',
+                type='RandomFlip'),
+            dict(type='RandomHalfBody'),
+            dict(rotate_factor=80,
+                scale_factor=[
+                    0.6,
+                    1.4,
+                    ],
+                type='RandomBBoxTransform'),
+            dict(input_size=(
+                    256,
+                    256,
+                    ),
+                type='TopdownAffine'),
+            dict(type='mmdet.YOLOXHSVRandomAug'),
+            dict(transforms=[
+                    dict(p=0.1,
+                        type='Blur'),
+                    dict(p=0.1,
+                        type='MedianBlur'),
+                    dict(max_height=0.4,
+                        max_holes=1,
+                        max_width=0.4,
+                        min_height=0.2,
+                        min_holes=1,
+                        min_width=0.2,
+                        p=1.0,
+                        type='CoarseDropout'),
+                    ],
+                type='Albumentation'),
+            dict(encoder=dict(
+                    input_size=(
+                        256,
+                        256,
+                        ),
+                    normalize=False,
+                    sigma=(
+                        5.66,
+                        5.66,
+                        ),
+                    simcc_split_ratio=2.0,
+                    type='SimCCLabel',
+                    use_dark=False),
+                type='GenerateTarget'),
+            dict(type='PackPoseInputs'),
+            ],
+        type='DeepFashion2Dataset'),
+    num_workers=10,
+    persistent_workers=True,
+    sampler=dict(
+        shuffle=True,
+        type='DefaultSampler'))
+train_pipeline=[
+    dict(backend_args=dict(
+            backend='local'),
+        type='LoadImage'),
+    dict(type='GetBBoxCenterScale'),
+    dict(direction='horizontal',
+        type='RandomFlip'),
+    dict(type='RandomHalfBody'),
+    dict(rotate_factor=80,
+        scale_factor=[
+            0.6,
+            1.4,
+            ],
+        type='RandomBBoxTransform'),
+    dict(input_size=(
+            256,
+            256,
+            ),
+        type='TopdownAffine'),
+    dict(type='mmdet.YOLOXHSVRandomAug'),
+    dict(transforms=[
+            dict(p=0.1,
+                type='Blur'),
+            dict(p=0.1,
+                type='MedianBlur'),
+            dict(max_height=0.4,
+                max_holes=1,
+                max_width=0.4,
+                min_height=0.2,
+                min_holes=1,
+                min_width=0.2,
+                p=1.0,
+                type='CoarseDropout'),
+            ],
+        type='Albumentation'),
+    dict(encoder=dict(
+            input_size=(
+                256,
+                256,
+                ),
+            normalize=False,
+            sigma=(
+                5.66,
+                5.66,
+                ),
+            simcc_split_ratio=2.0,
+            type='SimCCLabel',
+            use_dark=False),
+        type='GenerateTarget'),
+    dict(type='PackPoseInputs'),
+    ]
+train_pipeline_stage2=[
+    dict(backend_args=dict(
+            backend='local'),
+        type='LoadImage'),
+    dict(type='GetBBoxCenterScale'),
+    dict(direction='horizontal',
+        type='RandomFlip'),
+    dict(type='RandomHalfBody'),
+    dict(rotate_factor=60,
+        scale_factor=[
+            0.75,
+            1.25,
+            ],
+        shift_factor=0.0,
+        type='RandomBBoxTransform'),
+    dict(input_size=(
+            256,
+            256,
+            ),
+        type='TopdownAffine'),
+    dict(type='mmdet.YOLOXHSVRandomAug'),
+    dict(transforms=[
+            dict(p=0.1,
+                type='Blur'),
+            dict(p=0.1,
+                type='MedianBlur'),
+            dict(max_height=0.4,
+                max_holes=1,
+                max_width=0.4,
+                min_height=0.2,
+                min_holes=1,
+                min_width=0.2,
+                p=0.5,
+                type='CoarseDropout'),
+            ],
+        type='Albumentation'),
+    dict(encoder=dict(
+            input_size=(
+                256,
+                256,
+                ),
+            normalize=False,
+            sigma=(
+                5.66,
+                5.66,
+                ),
+            simcc_split_ratio=2.0,
+            type='SimCCLabel',
+            use_dark=False),
+        type='GenerateTarget'),
+    dict(type='PackPoseInputs'),
+    ]
+val_cfg=dict(
+    )
+val_dataloader=dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='./validation/deepfashion2_long_sleeved_dress_validation.json',
+        data_mode='topdown',
+        data_prefix=dict(
+            img='validation/image/'),
+        data_root='D:/BaiduNetdiskDownload/Deepfashion2',
+        pipeline=[
+            dict(backend_args=dict(
+                    backend='local'),
+                type='LoadImage'),
+            dict(type='GetBBoxCenterScale'),
+            dict(input_size=(
+                    256,
+                    256,
+                    ),
+                type='TopdownAffine'),
+            dict(type='PackPoseInputs'),
+            ],
+        test_mode=True,
+        type='DeepFashion2Dataset'),
+    drop_last=False,
+    num_workers=10,
+    persistent_workers=True,
+    sampler=dict(
+        round_up=False,
+        shuffle=False,
+        type='DefaultSampler'))
+val_evaluator=[
+    dict(thr=0.2,
+        type='PCKAccuracy'),
+    dict(type='AUC'),
+    dict(type='EPE'),
+    ]
+val_pipeline=[
+    dict(backend_args=dict(
+            backend='local'),
+        type='LoadImage'),
+    dict(type='GetBBoxCenterScale'),
+    dict(input_size=(
+            256,
+            256,
+            ),
+        type='TopdownAffine'),
+    dict(type='PackPoseInputs'),
+    ]
+vis_backends=[
+    dict(type='LocalVisBackend'),
+    ]
+visualizer=dict(
+    name='visualizer',
+    type='PoseLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+        ])
+work_dir='./work_dirs\\rtmpose-m_deepfasion2-long-sleeved-dress-256x192'
+2023/09/23 22:03:44 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2023/09/23 22:03:44 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(49          ) EMAHook                            
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_load_checkpoint:
+(49          ) EMAHook                            
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(49          ) EMAHook                            
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+(NORMAL      ) PipelineSwitchHook                 
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(49          ) EMAHook                            
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(49          ) EMAHook                            
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) PoseVisualizationHook              
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(49          ) EMAHook                            
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_save_checkpoint:
+(49          ) EMAHook                            
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(49          ) EMAHook                            
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) PoseVisualizationHook              
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(49          ) EMAHook                            
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stem.0.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stem.0.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stem.1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stem.1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stem.2.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stem.2.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.0.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.0.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.main_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.main_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.short_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.short_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.final_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.final_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.0.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.0.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.0.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.0.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.0.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.0.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.1.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.1.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.1.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.1.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.1.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.blocks.1.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage1.1.attention.fc.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.0.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.0.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.main_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.main_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.short_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.short_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.final_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.final_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.0.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.0.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.0.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.0.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.0.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.0.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.1.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.1.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.1.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.1.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.1.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.1.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.2.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.2.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.2.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.2.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.2.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.2.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.3.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.3.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.3.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.3.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.3.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.blocks.3.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage2.1.attention.fc.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.0.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.0.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.main_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.main_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.short_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.short_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.final_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.final_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.0.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.0.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.0.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.0.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.0.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.0.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.1.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.1.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.1.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.1.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.1.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.1.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.2.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.2.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.2.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.2.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.2.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.2.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.3.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.3.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.3.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.3.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.3.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.blocks.3.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage3.1.attention.fc.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.0.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.0.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.1.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.1.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.1.conv2.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.1.conv2.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.main_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.main_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.short_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.short_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.final_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.final_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.0.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.0.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.0.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.0.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.0.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.0.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.1.conv1.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.1.conv1.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.1.conv2.depthwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.1.conv2.depthwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.1.conv2.pointwise_conv.bn.weight:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.blocks.1.conv2.pointwise_conv.bn.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- backbone.stage4.2.attention.fc.bias:weight_decay=0.0
+2023/09/23 22:03:51 - mmengine - INFO - paramwise_options -- head.final_layer.bias:weight_decay=0.0
+2023/09/23 22:03:53 - mmengine - WARNING - The prefix is not set in metric class PCKAccuracy.
+2023/09/23 22:03:53 - mmengine - WARNING - The prefix is not set in metric class AUC.
+2023/09/23 22:03:53 - mmengine - WARNING - The prefix is not set in metric class EPE.
+2023/09/23 22:03:57 - mmengine - INFO - load backbone. in model from: https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth
+Name of parameter - Initialization information
+
+backbone.stem.0.conv.weight - torch.Size([24, 3, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stem.0.bn.weight - torch.Size([24]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stem.0.bn.bias - torch.Size([24]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stem.1.conv.weight - torch.Size([24, 24, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stem.1.bn.weight - torch.Size([24]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stem.1.bn.bias - torch.Size([24]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stem.2.conv.weight - torch.Size([48, 24, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stem.2.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stem.2.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.0.conv.weight - torch.Size([96, 48, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.0.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.0.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.main_conv.conv.weight - torch.Size([48, 96, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.main_conv.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.main_conv.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.short_conv.conv.weight - torch.Size([48, 96, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.short_conv.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.short_conv.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.final_conv.conv.weight - torch.Size([96, 96, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.final_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.final_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv1.conv.weight - torch.Size([48, 48, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv1.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv1.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv2.depthwise_conv.conv.weight - torch.Size([48, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv2.depthwise_conv.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv2.depthwise_conv.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv2.pointwise_conv.conv.weight - torch.Size([48, 48, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv2.pointwise_conv.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.0.conv2.pointwise_conv.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv1.conv.weight - torch.Size([48, 48, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv1.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv1.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv2.depthwise_conv.conv.weight - torch.Size([48, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv2.depthwise_conv.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv2.depthwise_conv.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv2.pointwise_conv.conv.weight - torch.Size([48, 48, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv2.pointwise_conv.bn.weight - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.blocks.1.conv2.pointwise_conv.bn.bias - torch.Size([48]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.attention.fc.weight - torch.Size([96, 96, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage1.1.attention.fc.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.0.conv.weight - torch.Size([192, 96, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.0.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.0.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.main_conv.conv.weight - torch.Size([96, 192, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.main_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.main_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.short_conv.conv.weight - torch.Size([96, 192, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.short_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.short_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.final_conv.conv.weight - torch.Size([192, 192, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.final_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.final_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv1.conv.weight - torch.Size([96, 96, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv1.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv1.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv2.depthwise_conv.conv.weight - torch.Size([96, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv2.depthwise_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv2.depthwise_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv2.pointwise_conv.conv.weight - torch.Size([96, 96, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv2.pointwise_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.0.conv2.pointwise_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv1.conv.weight - torch.Size([96, 96, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv1.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv1.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv2.depthwise_conv.conv.weight - torch.Size([96, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv2.depthwise_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv2.depthwise_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv2.pointwise_conv.conv.weight - torch.Size([96, 96, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv2.pointwise_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.1.conv2.pointwise_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv1.conv.weight - torch.Size([96, 96, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv1.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv1.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv2.depthwise_conv.conv.weight - torch.Size([96, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv2.depthwise_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv2.depthwise_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv2.pointwise_conv.conv.weight - torch.Size([96, 96, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv2.pointwise_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.2.conv2.pointwise_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv1.conv.weight - torch.Size([96, 96, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv1.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv1.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv2.depthwise_conv.conv.weight - torch.Size([96, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv2.depthwise_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv2.depthwise_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv2.pointwise_conv.conv.weight - torch.Size([96, 96, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv2.pointwise_conv.bn.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.blocks.3.conv2.pointwise_conv.bn.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.attention.fc.weight - torch.Size([192, 192, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage2.1.attention.fc.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.0.conv.weight - torch.Size([384, 192, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.0.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.0.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.main_conv.conv.weight - torch.Size([192, 384, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.main_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.main_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.short_conv.conv.weight - torch.Size([192, 384, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.short_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.short_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.final_conv.conv.weight - torch.Size([384, 384, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.final_conv.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.final_conv.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv1.conv.weight - torch.Size([192, 192, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv1.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv1.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv2.depthwise_conv.conv.weight - torch.Size([192, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv2.depthwise_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv2.depthwise_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv2.pointwise_conv.conv.weight - torch.Size([192, 192, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv2.pointwise_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.0.conv2.pointwise_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv1.conv.weight - torch.Size([192, 192, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv1.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv1.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv2.depthwise_conv.conv.weight - torch.Size([192, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv2.depthwise_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv2.depthwise_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv2.pointwise_conv.conv.weight - torch.Size([192, 192, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv2.pointwise_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.1.conv2.pointwise_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv1.conv.weight - torch.Size([192, 192, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv1.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv1.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv2.depthwise_conv.conv.weight - torch.Size([192, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv2.depthwise_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv2.depthwise_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv2.pointwise_conv.conv.weight - torch.Size([192, 192, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv2.pointwise_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.2.conv2.pointwise_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv1.conv.weight - torch.Size([192, 192, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv1.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv1.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv2.depthwise_conv.conv.weight - torch.Size([192, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv2.depthwise_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv2.depthwise_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv2.pointwise_conv.conv.weight - torch.Size([192, 192, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv2.pointwise_conv.bn.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.blocks.3.conv2.pointwise_conv.bn.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.attention.fc.weight - torch.Size([384, 384, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage3.1.attention.fc.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.0.conv.weight - torch.Size([768, 384, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.0.bn.weight - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.0.bn.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.1.conv1.conv.weight - torch.Size([384, 768, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.1.conv1.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.1.conv1.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.1.conv2.conv.weight - torch.Size([768, 1536, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.1.conv2.bn.weight - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.1.conv2.bn.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.main_conv.conv.weight - torch.Size([384, 768, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.main_conv.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.main_conv.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.short_conv.conv.weight - torch.Size([384, 768, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.short_conv.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.short_conv.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.final_conv.conv.weight - torch.Size([768, 768, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.final_conv.bn.weight - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.final_conv.bn.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv1.conv.weight - torch.Size([384, 384, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv1.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv1.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv2.depthwise_conv.conv.weight - torch.Size([384, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv2.depthwise_conv.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv2.depthwise_conv.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv2.pointwise_conv.conv.weight - torch.Size([384, 384, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv2.pointwise_conv.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.0.conv2.pointwise_conv.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv1.conv.weight - torch.Size([384, 384, 3, 3]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv1.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv1.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv2.depthwise_conv.conv.weight - torch.Size([384, 1, 5, 5]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv2.depthwise_conv.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv2.depthwise_conv.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv2.pointwise_conv.conv.weight - torch.Size([384, 384, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv2.pointwise_conv.bn.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.blocks.1.conv2.pointwise_conv.bn.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.attention.fc.weight - torch.Size([768, 768, 1, 1]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+backbone.stage4.2.attention.fc.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-m_udp-aic-coco_210e-256x192-f2f7d6f6_20230130.pth 
+
+head.final_layer.weight - torch.Size([294, 768, 7, 7]): 
+NormalInit: mean=0, std=0.001, bias=0 
+
+head.final_layer.bias - torch.Size([294]): 
+NormalInit: mean=0, std=0.001, bias=0 
+
+head.mlp.0.g - torch.Size([1]): 
+The value is the same before and after calling `init_weights` of TopdownPoseEstimator  
+
+head.mlp.1.weight - torch.Size([256, 64]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+head.gau.gamma - torch.Size([2, 128]): 
+The value is the same before and after calling `init_weights` of TopdownPoseEstimator  
+
+head.gau.beta - torch.Size([2, 128]): 
+The value is the same before and after calling `init_weights` of TopdownPoseEstimator  
+
+head.gau.o.weight - torch.Size([256, 512]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+head.gau.uv.weight - torch.Size([1152, 256]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+head.gau.ln.g - torch.Size([1]): 
+The value is the same before and after calling `init_weights` of TopdownPoseEstimator  
+
+head.gau.res_scale.scale - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of TopdownPoseEstimator  
+
+head.cls_x.weight - torch.Size([512, 256]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+head.cls_y.weight - torch.Size([512, 256]): 
+NormalInit: mean=0, std=0.01, bias=0 
+2023/09/23 22:03:57 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2023/09/23 22:03:57 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2023/09/23 22:03:57 - mmengine - INFO - Checkpoints will be saved to D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192.
+2023/09/23 22:05:21 - mmengine - INFO - Epoch(train)   [1][ 50/124]  base_lr: 9.811712e-05 lr: 9.811712e-05  eta: 8:03:55  time: 1.677407  data_time: 0.998496  memory: 6676  loss: 0.097186  loss_kpt: 0.097186  acc_pose: 0.184835
+2023/09/23 22:05:51 - mmengine - INFO - Epoch(train)   [1][100/124]  base_lr: 1.982162e-04 lr: 1.982162e-04  eta: 5:27:33  time: 0.599944  data_time: 0.049737  memory: 6676  loss: 0.071797  loss_kpt: 0.071797  acc_pose: 0.425889
+2023/09/23 22:06:05 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:06:37 - mmengine - INFO - Epoch(train)   [2][ 50/124]  base_lr: 3.463629e-04 lr: 3.463629e-04  eta: 4:23:51  time: 0.650661  data_time: 0.083932  memory: 6676  loss: 0.061611  loss_kpt: 0.061611  acc_pose: 0.564322
+2023/09/23 22:07:08 - mmengine - INFO - Epoch(train)   [2][100/124]  base_lr: 4.464620e-04 lr: 4.464620e-04  eta: 4:03:06  time: 0.607803  data_time: 0.045887  memory: 6676  loss: 0.059425  loss_kpt: 0.059425  acc_pose: 0.577941
+2023/09/23 22:07:21 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:07:53 - mmengine - INFO - Epoch(train)   [3][ 50/124]  base_lr: 5.946086e-04 lr: 5.946086e-04  eta: 3:45:24  time: 0.641268  data_time: 0.071153  memory: 6676  loss: 0.057652  loss_kpt: 0.057652  acc_pose: 0.639700
+2023/09/23 22:08:24 - mmengine - INFO - Epoch(train)   [3][100/124]  base_lr: 6.947077e-04 lr: 6.947077e-04  eta: 3:37:29  time: 0.614458  data_time: 0.051697  memory: 6676  loss: 0.056327  loss_kpt: 0.056327  acc_pose: 0.659447
+2023/09/23 22:08:38 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:09:10 - mmengine - INFO - Epoch(train)   [4][ 50/124]  base_lr: 8.428544e-04 lr: 8.428544e-04  eta: 3:29:39  time: 0.648983  data_time: 0.077464  memory: 6676  loss: 0.055065  loss_kpt: 0.055065  acc_pose: 0.626730
+2023/09/23 22:09:40 - mmengine - INFO - Epoch(train)   [4][100/124]  base_lr: 9.429535e-04 lr: 9.429535e-04  eta: 3:24:46  time: 0.599792  data_time: 0.050123  memory: 6676  loss: 0.055162  loss_kpt: 0.055162  acc_pose: 0.682106
+2023/09/23 22:09:54 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:10:27 - mmengine - INFO - Epoch(train)   [5][ 50/124]  base_lr: 1.091100e-03 lr: 1.091100e-03  eta: 3:19:59  time: 0.649852  data_time: 0.080259  memory: 6676  loss: 0.055493  loss_kpt: 0.055493  acc_pose: 0.596790
+2023/09/23 22:10:57 - mmengine - INFO - Epoch(train)   [5][100/124]  base_lr: 1.191199e-03 lr: 1.191199e-03  eta: 3:17:01  time: 0.612403  data_time: 0.042615  memory: 6676  loss: 0.055684  loss_kpt: 0.055684  acc_pose: 0.671892
+2023/09/23 22:11:11 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:11:59 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 22:11:59 - mmengine - INFO - Evaluating AUC...
+2023/09/23 22:11:59 - mmengine - INFO - Evaluating EPE...
+2023/09/23 22:11:59 - mmengine - INFO - Epoch(val) [5][24/24]    PCK: 0.979385  AUC: 0.414265  EPE: 23.141419  data_time: 1.686857  time: 1.988026
+2023/09/23 22:12:01 - mmengine - INFO - The best checkpoint with 0.4143 AUC at 5 epoch is saved to best_AUC_epoch_5.pth.
+2023/09/23 22:12:34 - mmengine - INFO - Epoch(train)   [6][ 50/124]  base_lr: 1.339346e-03 lr: 1.339346e-03  eta: 3:13:55  time: 0.656115  data_time: 0.081757  memory: 6676  loss: 0.054649  loss_kpt: 0.054649  acc_pose: 0.600490
+2023/09/23 22:13:04 - mmengine - INFO - Epoch(train)   [6][100/124]  base_lr: 1.439445e-03 lr: 1.439445e-03  eta: 3:11:25  time: 0.597846  data_time: 0.045390  memory: 6676  loss: 0.054088  loss_kpt: 0.054088  acc_pose: 0.636620
+2023/09/23 22:13:18 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:13:51 - mmengine - INFO - Epoch(train)   [7][ 50/124]  base_lr: 1.587592e-03 lr: 1.587592e-03  eta: 3:09:00  time: 0.649203  data_time: 0.076827  memory: 6676  loss: 0.053919  loss_kpt: 0.053919  acc_pose: 0.648455
+2023/09/23 22:14:21 - mmengine - INFO - Epoch(train)   [7][100/124]  base_lr: 1.687691e-03 lr: 1.687691e-03  eta: 3:07:18  time: 0.614885  data_time: 0.048897  memory: 6676  loss: 0.054244  loss_kpt: 0.054244  acc_pose: 0.640928
+2023/09/23 22:14:35 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:15:07 - mmengine - INFO - Epoch(train)   [8][ 50/124]  base_lr: 1.835837e-03 lr: 1.835837e-03  eta: 3:05:09  time: 0.643563  data_time: 0.073756  memory: 6676  loss: 0.054319  loss_kpt: 0.054319  acc_pose: 0.680221
+2023/09/23 22:15:38 - mmengine - INFO - Epoch(train)   [8][100/124]  base_lr: 1.935937e-03 lr: 1.935937e-03  eta: 3:03:44  time: 0.614771  data_time: 0.045541  memory: 6676  loss: 0.054031  loss_kpt: 0.054031  acc_pose: 0.593029
+2023/09/23 22:15:52 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:15:59 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:16:25 - mmengine - INFO - Epoch(train)   [9][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 3:02:06  time: 0.654070  data_time: 0.082864  memory: 6676  loss: 0.054581  loss_kpt: 0.054581  acc_pose: 0.652339
+2023/09/23 22:16:55 - mmengine - INFO - Epoch(train)   [9][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 3:00:42  time: 0.601903  data_time: 0.046645  memory: 6676  loss: 0.053746  loss_kpt: 0.053746  acc_pose: 0.610368
+2023/09/23 22:17:09 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:17:42 - mmengine - INFO - Epoch(train)  [10][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:59:16  time: 0.655081  data_time: 0.076816  memory: 6676  loss: 0.053155  loss_kpt: 0.053155  acc_pose: 0.683390
+2023/09/23 22:18:12 - mmengine - INFO - Epoch(train)  [10][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:58:00  time: 0.599092  data_time: 0.045451  memory: 6676  loss: 0.053085  loss_kpt: 0.053085  acc_pose: 0.680142
+2023/09/23 22:18:25 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:18:25 - mmengine - INFO - Saving checkpoint at 10 epochs
+2023/09/23 22:18:37 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 22:18:37 - mmengine - INFO - Evaluating AUC...
+2023/09/23 22:18:37 - mmengine - INFO - Evaluating EPE...
+2023/09/23 22:18:37 - mmengine - INFO - Epoch(val) [10][24/24]    PCK: 0.970864  AUC: 0.431106  EPE: 23.921250  data_time: 0.035284  time: 0.319211
+2023/09/23 22:18:37 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_5.pth is removed
+2023/09/23 22:18:39 - mmengine - INFO - The best checkpoint with 0.4311 AUC at 10 epoch is saved to best_AUC_epoch_10.pth.
+2023/09/23 22:19:20 - mmengine - INFO - Epoch(train)  [11][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:57:23  time: 0.725896  data_time: 0.076304  memory: 6676  loss: 0.052356  loss_kpt: 0.052356  acc_pose: 0.652323
+2023/09/23 22:19:56 - mmengine - INFO - Epoch(train)  [11][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:57:23  time: 0.717024  data_time: 0.071088  memory: 6676  loss: 0.052829  loss_kpt: 0.052829  acc_pose: 0.698610
+2023/09/23 22:20:09 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:20:43 - mmengine - INFO - Epoch(train)  [12][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:56:10  time: 0.675437  data_time: 0.084147  memory: 6676  loss: 0.051975  loss_kpt: 0.051975  acc_pose: 0.679984
+2023/09/23 22:21:16 - mmengine - INFO - Epoch(train)  [12][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:55:33  time: 0.654969  data_time: 0.054553  memory: 6676  loss: 0.052414  loss_kpt: 0.052414  acc_pose: 0.697293
+2023/09/23 22:21:29 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:22:01 - mmengine - INFO - Epoch(train)  [13][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:54:06  time: 0.630761  data_time: 0.072829  memory: 6676  loss: 0.051254  loss_kpt: 0.051254  acc_pose: 0.718195
+2023/09/23 22:22:31 - mmengine - INFO - Epoch(train)  [13][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:53:05  time: 0.604141  data_time: 0.046716  memory: 6676  loss: 0.051714  loss_kpt: 0.051714  acc_pose: 0.695254
+2023/09/23 22:22:45 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:23:17 - mmengine - INFO - Epoch(train)  [14][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:51:46  time: 0.629249  data_time: 0.076191  memory: 6676  loss: 0.051726  loss_kpt: 0.051726  acc_pose: 0.706171
+2023/09/23 22:23:46 - mmengine - INFO - Epoch(train)  [14][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:50:44  time: 0.593655  data_time: 0.045290  memory: 6676  loss: 0.051667  loss_kpt: 0.051667  acc_pose: 0.677264
+2023/09/23 22:24:00 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:24:32 - mmengine - INFO - Epoch(train)  [15][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:49:30  time: 0.634669  data_time: 0.073680  memory: 6676  loss: 0.051745  loss_kpt: 0.051745  acc_pose: 0.709662
+2023/09/23 22:25:02 - mmengine - INFO - Epoch(train)  [15][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:48:37  time: 0.604759  data_time: 0.050662  memory: 6676  loss: 0.050929  loss_kpt: 0.050929  acc_pose: 0.726113
+2023/09/23 22:25:16 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:25:23 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 22:25:23 - mmengine - INFO - Evaluating AUC...
+2023/09/23 22:25:23 - mmengine - INFO - Evaluating EPE...
+2023/09/23 22:25:23 - mmengine - INFO - Epoch(val) [15][24/24]    PCK: 0.969115  AUC: 0.462824  EPE: 22.702971  data_time: 0.036043  time: 0.294912
+2023/09/23 22:25:23 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_10.pth is removed
+2023/09/23 22:25:25 - mmengine - INFO - The best checkpoint with 0.4628 AUC at 15 epoch is saved to best_AUC_epoch_15.pth.
+2023/09/23 22:26:01 - mmengine - INFO - Epoch(train)  [16][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:47:29  time: 0.641919  data_time: 0.068760  memory: 6676  loss: 0.050282  loss_kpt: 0.050282  acc_pose: 0.762858
+2023/09/23 22:26:32 - mmengine - INFO - Epoch(train)  [16][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:46:38  time: 0.603418  data_time: 0.051206  memory: 6676  loss: 0.050663  loss_kpt: 0.050663  acc_pose: 0.715732
+2023/09/23 22:26:45 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:26:57 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:27:17 - mmengine - INFO - Epoch(train)  [17][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:45:28  time: 0.626073  data_time: 0.074061  memory: 6676  loss: 0.051221  loss_kpt: 0.051221  acc_pose: 0.725955
+2023/09/23 22:27:47 - mmengine - INFO - Epoch(train)  [17][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:44:43  time: 0.611887  data_time: 0.046538  memory: 6676  loss: 0.049778  loss_kpt: 0.049778  acc_pose: 0.680525
+2023/09/23 22:28:01 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:28:33 - mmengine - INFO - Epoch(train)  [18][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:43:39  time: 0.633558  data_time: 0.073652  memory: 6676  loss: 0.050604  loss_kpt: 0.050604  acc_pose: 0.738525
+2023/09/23 22:29:03 - mmengine - INFO - Epoch(train)  [18][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:42:51  time: 0.601738  data_time: 0.050385  memory: 6676  loss: 0.050852  loss_kpt: 0.050852  acc_pose: 0.684875
+2023/09/23 22:29:17 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:29:49 - mmengine - INFO - Epoch(train)  [19][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:41:52  time: 0.642938  data_time: 0.080738  memory: 6676  loss: 0.050486  loss_kpt: 0.050486  acc_pose: 0.664636
+2023/09/23 22:30:19 - mmengine - INFO - Epoch(train)  [19][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:41:06  time: 0.601114  data_time: 0.046676  memory: 6676  loss: 0.050441  loss_kpt: 0.050441  acc_pose: 0.750433
+2023/09/23 22:30:33 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:31:05 - mmengine - INFO - Epoch(train)  [20][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:40:06  time: 0.641086  data_time: 0.075732  memory: 6676  loss: 0.050496  loss_kpt: 0.050496  acc_pose: 0.750359
+2023/09/23 22:31:35 - mmengine - INFO - Epoch(train)  [20][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:39:24  time: 0.610330  data_time: 0.052276  memory: 6676  loss: 0.049858  loss_kpt: 0.049858  acc_pose: 0.729987
+2023/09/23 22:31:49 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:31:49 - mmengine - INFO - Saving checkpoint at 20 epochs
+2023/09/23 22:32:01 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 22:32:01 - mmengine - INFO - Evaluating AUC...
+2023/09/23 22:32:01 - mmengine - INFO - Evaluating EPE...
+2023/09/23 22:32:01 - mmengine - INFO - Epoch(val) [20][24/24]    PCK: 0.979469  AUC: 0.481591  EPE: 20.492225  data_time: 0.035975  time: 0.308593
+2023/09/23 22:32:01 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_15.pth is removed
+2023/09/23 22:32:03 - mmengine - INFO - The best checkpoint with 0.4816 AUC at 20 epoch is saved to best_AUC_epoch_20.pth.
+2023/09/23 22:32:39 - mmengine - INFO - Epoch(train)  [21][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:38:23  time: 0.631034  data_time: 0.070355  memory: 6676  loss: 0.049853  loss_kpt: 0.049853  acc_pose: 0.709244
+2023/09/23 22:33:09 - mmengine - INFO - Epoch(train)  [21][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:37:42  time: 0.606984  data_time: 0.050431  memory: 6676  loss: 0.049826  loss_kpt: 0.049826  acc_pose: 0.724358
+2023/09/23 22:33:23 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:33:54 - mmengine - INFO - Epoch(train)  [22][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:36:42  time: 0.623432  data_time: 0.072569  memory: 6676  loss: 0.050590  loss_kpt: 0.050590  acc_pose: 0.721767
+2023/09/23 22:34:25 - mmengine - INFO - Epoch(train)  [22][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:36:01  time: 0.607129  data_time: 0.050005  memory: 6676  loss: 0.050284  loss_kpt: 0.050284  acc_pose: 0.681149
+2023/09/23 22:34:38 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:35:10 - mmengine - INFO - Epoch(train)  [23][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:35:05  time: 0.640421  data_time: 0.078702  memory: 6676  loss: 0.049636  loss_kpt: 0.049636  acc_pose: 0.685971
+2023/09/23 22:35:40 - mmengine - INFO - Epoch(train)  [23][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:34:21  time: 0.590237  data_time: 0.043710  memory: 6676  loss: 0.049772  loss_kpt: 0.049772  acc_pose: 0.744968
+2023/09/23 22:35:54 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:36:26 - mmengine - INFO - Epoch(train)  [24][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:33:27  time: 0.639854  data_time: 0.068717  memory: 6676  loss: 0.049707  loss_kpt: 0.049707  acc_pose: 0.715066
+2023/09/23 22:36:56 - mmengine - INFO - Epoch(train)  [24][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:32:47  time: 0.601590  data_time: 0.046418  memory: 6676  loss: 0.049032  loss_kpt: 0.049032  acc_pose: 0.746634
+2023/09/23 22:37:10 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:37:26 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:37:41 - mmengine - INFO - Epoch(train)  [25][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:31:51  time: 0.627331  data_time: 0.073321  memory: 6676  loss: 0.050215  loss_kpt: 0.050215  acc_pose: 0.720786
+2023/09/23 22:38:12 - mmengine - INFO - Epoch(train)  [25][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:31:14  time: 0.609439  data_time: 0.050308  memory: 6676  loss: 0.049784  loss_kpt: 0.049784  acc_pose: 0.737652
+2023/09/23 22:38:26 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:38:33 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 22:38:33 - mmengine - INFO - Evaluating AUC...
+2023/09/23 22:38:34 - mmengine - INFO - Evaluating EPE...
+2023/09/23 22:38:34 - mmengine - INFO - Epoch(val) [25][24/24]    PCK: 0.978449  AUC: 0.484194  EPE: 20.609591  data_time: 0.044569  time: 0.312573
+2023/09/23 22:38:34 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_20.pth is removed
+2023/09/23 22:38:36 - mmengine - INFO - The best checkpoint with 0.4842 AUC at 25 epoch is saved to best_AUC_epoch_25.pth.
+2023/09/23 22:39:12 - mmengine - INFO - Epoch(train)  [26][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:30:23  time: 0.645501  data_time: 0.074285  memory: 6676  loss: 0.050042  loss_kpt: 0.050042  acc_pose: 0.761040
+2023/09/23 22:39:42 - mmengine - INFO - Epoch(train)  [26][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:29:43  time: 0.597876  data_time: 0.050500  memory: 6676  loss: 0.048661  loss_kpt: 0.048661  acc_pose: 0.749471
+2023/09/23 22:39:55 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:40:27 - mmengine - INFO - Epoch(train)  [27][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:28:49  time: 0.637462  data_time: 0.078860  memory: 6676  loss: 0.049402  loss_kpt: 0.049402  acc_pose: 0.736607
+2023/09/23 22:40:57 - mmengine - INFO - Epoch(train)  [27][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:28:09  time: 0.593597  data_time: 0.045320  memory: 6676  loss: 0.049013  loss_kpt: 0.049013  acc_pose: 0.747880
+2023/09/23 22:41:10 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:41:42 - mmengine - INFO - Epoch(train)  [28][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:27:16  time: 0.637936  data_time: 0.076179  memory: 6676  loss: 0.048933  loss_kpt: 0.048933  acc_pose: 0.746381
+2023/09/23 22:42:14 - mmengine - INFO - Epoch(train)  [28][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:26:46  time: 0.640075  data_time: 0.056670  memory: 6676  loss: 0.048688  loss_kpt: 0.048688  acc_pose: 0.691188
+2023/09/23 22:42:28 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:42:59 - mmengine - INFO - Epoch(train)  [29][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:25:52  time: 0.628415  data_time: 0.075865  memory: 6676  loss: 0.048723  loss_kpt: 0.048723  acc_pose: 0.747577
+2023/09/23 22:43:29 - mmengine - INFO - Epoch(train)  [29][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:25:13  time: 0.596987  data_time: 0.045419  memory: 6676  loss: 0.048798  loss_kpt: 0.048798  acc_pose: 0.751216
+2023/09/23 22:43:43 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:44:15 - mmengine - INFO - Epoch(train)  [30][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:24:22  time: 0.635998  data_time: 0.079300  memory: 6676  loss: 0.048528  loss_kpt: 0.048528  acc_pose: 0.751527
+2023/09/23 22:44:44 - mmengine - INFO - Epoch(train)  [30][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:23:42  time: 0.588654  data_time: 0.039429  memory: 6676  loss: 0.048137  loss_kpt: 0.048137  acc_pose: 0.801341
+2023/09/23 22:44:58 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:44:58 - mmengine - INFO - Saving checkpoint at 30 epochs
+2023/09/23 22:45:10 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 22:45:10 - mmengine - INFO - Evaluating AUC...
+2023/09/23 22:45:10 - mmengine - INFO - Evaluating EPE...
+2023/09/23 22:45:10 - mmengine - INFO - Epoch(val) [30][24/24]    PCK: 0.978806  AUC: 0.491379  EPE: 20.251087  data_time: 0.036191  time: 0.306847
+2023/09/23 22:45:10 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_25.pth is removed
+2023/09/23 22:45:12 - mmengine - INFO - The best checkpoint with 0.4914 AUC at 30 epoch is saved to best_AUC_epoch_30.pth.
+2023/09/23 22:45:48 - mmengine - INFO - Epoch(train)  [31][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:22:52  time: 0.639701  data_time: 0.077719  memory: 6676  loss: 0.048062  loss_kpt: 0.048062  acc_pose: 0.726044
+2023/09/23 22:46:18 - mmengine - INFO - Epoch(train)  [31][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:22:14  time: 0.594192  data_time: 0.046079  memory: 6676  loss: 0.048893  loss_kpt: 0.048893  acc_pose: 0.750099
+2023/09/23 22:46:31 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:47:03 - mmengine - INFO - Epoch(train)  [32][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:21:21  time: 0.628608  data_time: 0.075801  memory: 6676  loss: 0.048927  loss_kpt: 0.048927  acc_pose: 0.730125
+2023/09/23 22:47:32 - mmengine - INFO - Epoch(train)  [32][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:20:44  time: 0.594642  data_time: 0.049663  memory: 6676  loss: 0.048108  loss_kpt: 0.048108  acc_pose: 0.727615
+2023/09/23 22:47:46 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:48:06 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:48:17 - mmengine - INFO - Epoch(train)  [33][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:19:50  time: 0.623318  data_time: 0.071994  memory: 6676  loss: 0.048450  loss_kpt: 0.048450  acc_pose: 0.752678
+2023/09/23 22:48:46 - mmengine - INFO - Epoch(train)  [33][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:19:12  time: 0.585356  data_time: 0.040035  memory: 6676  loss: 0.048686  loss_kpt: 0.048686  acc_pose: 0.750361
+2023/09/23 22:49:00 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:49:31 - mmengine - INFO - Epoch(train)  [34][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:18:19  time: 0.622572  data_time: 0.073383  memory: 6676  loss: 0.048955  loss_kpt: 0.048955  acc_pose: 0.765540
+2023/09/23 22:50:00 - mmengine - INFO - Epoch(train)  [34][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:17:43  time: 0.594984  data_time: 0.045417  memory: 6676  loss: 0.049044  loss_kpt: 0.049044  acc_pose: 0.687137
+2023/09/23 22:50:14 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:50:44 - mmengine - INFO - Epoch(train)  [35][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:16:47  time: 0.607486  data_time: 0.071597  memory: 6676  loss: 0.048573  loss_kpt: 0.048573  acc_pose: 0.782139
+2023/09/23 22:51:13 - mmengine - INFO - Epoch(train)  [35][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:16:08  time: 0.576317  data_time: 0.048050  memory: 6676  loss: 0.048094  loss_kpt: 0.048094  acc_pose: 0.734727
+2023/09/23 22:51:26 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:51:33 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 22:51:33 - mmengine - INFO - Evaluating AUC...
+2023/09/23 22:51:33 - mmengine - INFO - Evaluating EPE...
+2023/09/23 22:51:33 - mmengine - INFO - Epoch(val) [35][24/24]    PCK: 0.981231  AUC: 0.493520  EPE: 20.003028  data_time: 0.033368  time: 0.290392
+2023/09/23 22:51:33 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_30.pth is removed
+2023/09/23 22:51:35 - mmengine - INFO - The best checkpoint with 0.4935 AUC at 35 epoch is saved to best_AUC_epoch_35.pth.
+2023/09/23 22:52:10 - mmengine - INFO - Epoch(train)  [36][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:15:14  time: 0.608694  data_time: 0.069443  memory: 6676  loss: 0.047930  loss_kpt: 0.047930  acc_pose: 0.742951
+2023/09/23 22:52:39 - mmengine - INFO - Epoch(train)  [36][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:14:35  time: 0.574598  data_time: 0.047139  memory: 6676  loss: 0.048260  loss_kpt: 0.048260  acc_pose: 0.701478
+2023/09/23 22:52:52 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:53:22 - mmengine - INFO - Epoch(train)  [37][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:13:41  time: 0.605727  data_time: 0.069412  memory: 6676  loss: 0.047947  loss_kpt: 0.047947  acc_pose: 0.752986
+2023/09/23 22:53:51 - mmengine - INFO - Epoch(train)  [37][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:13:02  time: 0.569381  data_time: 0.042778  memory: 6676  loss: 0.048324  loss_kpt: 0.048324  acc_pose: 0.695242
+2023/09/23 22:54:04 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:54:34 - mmengine - INFO - Epoch(train)  [38][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:12:08  time: 0.601986  data_time: 0.069728  memory: 6676  loss: 0.048240  loss_kpt: 0.048240  acc_pose: 0.748518
+2023/09/23 22:55:03 - mmengine - INFO - Epoch(train)  [38][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:11:30  time: 0.572107  data_time: 0.047101  memory: 6676  loss: 0.047945  loss_kpt: 0.047945  acc_pose: 0.732965
+2023/09/23 22:55:16 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:55:46 - mmengine - INFO - Epoch(train)  [39][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:10:37  time: 0.603254  data_time: 0.066100  memory: 6676  loss: 0.048045  loss_kpt: 0.048045  acc_pose: 0.763569
+2023/09/23 22:56:15 - mmengine - INFO - Epoch(train)  [39][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:09:59  time: 0.575361  data_time: 0.046718  memory: 6676  loss: 0.048223  loss_kpt: 0.048223  acc_pose: 0.737344
+2023/09/23 22:56:28 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:56:58 - mmengine - INFO - Epoch(train)  [40][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:09:06  time: 0.600482  data_time: 0.070741  memory: 6676  loss: 0.048197  loss_kpt: 0.048197  acc_pose: 0.740979
+2023/09/23 22:57:27 - mmengine - INFO - Epoch(train)  [40][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:08:29  time: 0.572816  data_time: 0.046276  memory: 6676  loss: 0.047877  loss_kpt: 0.047877  acc_pose: 0.707934
+2023/09/23 22:57:40 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:57:40 - mmengine - INFO - Saving checkpoint at 40 epochs
+2023/09/23 22:57:51 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 22:57:51 - mmengine - INFO - Evaluating AUC...
+2023/09/23 22:57:52 - mmengine - INFO - Evaluating EPE...
+2023/09/23 22:57:52 - mmengine - INFO - Epoch(val) [40][24/24]    PCK: 0.982448  AUC: 0.506667  EPE: 19.234649  data_time: 0.044376  time: 0.310264
+2023/09/23 22:57:52 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_35.pth is removed
+2023/09/23 22:57:54 - mmengine - INFO - The best checkpoint with 0.5067 AUC at 40 epoch is saved to best_AUC_epoch_40.pth.
+2023/09/23 22:58:22 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:58:28 - mmengine - INFO - Epoch(train)  [41][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:07:37  time: 0.608056  data_time: 0.069950  memory: 6676  loss: 0.047167  loss_kpt: 0.047167  acc_pose: 0.735204
+2023/09/23 22:58:57 - mmengine - INFO - Epoch(train)  [41][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:07:01  time: 0.574582  data_time: 0.046600  memory: 6676  loss: 0.047437  loss_kpt: 0.047437  acc_pose: 0.752598
+2023/09/23 22:59:10 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 22:59:40 - mmengine - INFO - Epoch(train)  [42][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:06:09  time: 0.605532  data_time: 0.071597  memory: 6676  loss: 0.047832  loss_kpt: 0.047832  acc_pose: 0.709092
+2023/09/23 23:00:09 - mmengine - INFO - Epoch(train)  [42][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:05:33  time: 0.572292  data_time: 0.042508  memory: 6676  loss: 0.048406  loss_kpt: 0.048406  acc_pose: 0.722283
+2023/09/23 23:00:22 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:00:53 - mmengine - INFO - Epoch(train)  [43][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:04:43  time: 0.611755  data_time: 0.077005  memory: 6676  loss: 0.047891  loss_kpt: 0.047891  acc_pose: 0.793656
+2023/09/23 23:01:21 - mmengine - INFO - Epoch(train)  [43][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:04:06  time: 0.570459  data_time: 0.042772  memory: 6676  loss: 0.047762  loss_kpt: 0.047762  acc_pose: 0.774346
+2023/09/23 23:01:35 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:02:05 - mmengine - INFO - Epoch(train)  [44][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:03:15  time: 0.603754  data_time: 0.070538  memory: 6676  loss: 0.047792  loss_kpt: 0.047792  acc_pose: 0.765471
+2023/09/23 23:02:34 - mmengine - INFO - Epoch(train)  [44][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:02:40  time: 0.574966  data_time: 0.047033  memory: 6676  loss: 0.046950  loss_kpt: 0.046950  acc_pose: 0.709919
+2023/09/23 23:02:47 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:03:17 - mmengine - INFO - Epoch(train)  [45][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:01:50  time: 0.614449  data_time: 0.073915  memory: 6676  loss: 0.048041  loss_kpt: 0.048041  acc_pose: 0.725854
+2023/09/23 23:03:46 - mmengine - INFO - Epoch(train)  [45][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:01:14  time: 0.571947  data_time: 0.043575  memory: 6676  loss: 0.047230  loss_kpt: 0.047230  acc_pose: 0.690699
+2023/09/23 23:03:59 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:04:06 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:04:06 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:04:07 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:04:07 - mmengine - INFO - Epoch(val) [45][24/24]    PCK: 0.982624  AUC: 0.507843  EPE: 19.301994  data_time: 0.033819  time: 0.289568
+2023/09/23 23:04:07 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_40.pth is removed
+2023/09/23 23:04:09 - mmengine - INFO - The best checkpoint with 0.5078 AUC at 45 epoch is saved to best_AUC_epoch_45.pth.
+2023/09/23 23:04:43 - mmengine - INFO - Epoch(train)  [46][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 2:00:25  time: 0.609285  data_time: 0.073195  memory: 6676  loss: 0.047125  loss_kpt: 0.047125  acc_pose: 0.750855
+2023/09/23 23:05:12 - mmengine - INFO - Epoch(train)  [46][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:59:49  time: 0.568808  data_time: 0.043589  memory: 6676  loss: 0.047659  loss_kpt: 0.047659  acc_pose: 0.754099
+2023/09/23 23:05:25 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:05:55 - mmengine - INFO - Epoch(train)  [47][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:59:00  time: 0.605637  data_time: 0.070803  memory: 6676  loss: 0.047432  loss_kpt: 0.047432  acc_pose: 0.762451
+2023/09/23 23:06:24 - mmengine - INFO - Epoch(train)  [47][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:58:25  time: 0.573259  data_time: 0.046422  memory: 6676  loss: 0.047251  loss_kpt: 0.047251  acc_pose: 0.794936
+2023/09/23 23:06:37 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:07:07 - mmengine - INFO - Epoch(train)  [48][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:57:35  time: 0.610247  data_time: 0.076928  memory: 6676  loss: 0.046934  loss_kpt: 0.046934  acc_pose: 0.824029
+2023/09/23 23:07:36 - mmengine - INFO - Epoch(train)  [48][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:57:01  time: 0.572016  data_time: 0.039320  memory: 6676  loss: 0.046919  loss_kpt: 0.046919  acc_pose: 0.755662
+2023/09/23 23:07:49 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:08:18 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:08:20 - mmengine - INFO - Epoch(train)  [49][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:56:12  time: 0.607171  data_time: 0.070350  memory: 6676  loss: 0.047323  loss_kpt: 0.047323  acc_pose: 0.780814
+2023/09/23 23:08:48 - mmengine - INFO - Epoch(train)  [49][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:55:37  time: 0.570188  data_time: 0.042854  memory: 6676  loss: 0.047704  loss_kpt: 0.047704  acc_pose: 0.728227
+2023/09/23 23:09:01 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:09:31 - mmengine - INFO - Epoch(train)  [50][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:54:48  time: 0.600143  data_time: 0.069986  memory: 6676  loss: 0.047170  loss_kpt: 0.047170  acc_pose: 0.751435
+2023/09/23 23:10:00 - mmengine - INFO - Epoch(train)  [50][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:54:14  time: 0.577734  data_time: 0.046978  memory: 6676  loss: 0.047435  loss_kpt: 0.047435  acc_pose: 0.711951
+2023/09/23 23:10:13 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:10:13 - mmengine - INFO - Saving checkpoint at 50 epochs
+2023/09/23 23:10:25 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:10:25 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:10:25 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:10:25 - mmengine - INFO - Epoch(val) [50][24/24]    PCK: 0.983121  AUC: 0.512848  EPE: 18.864893  data_time: 0.032424  time: 0.295413
+2023/09/23 23:10:25 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_45.pth is removed
+2023/09/23 23:10:27 - mmengine - INFO - The best checkpoint with 0.5128 AUC at 50 epoch is saved to best_AUC_epoch_50.pth.
+2023/09/23 23:11:02 - mmengine - INFO - Epoch(train)  [51][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:53:26  time: 0.615711  data_time: 0.076296  memory: 6676  loss: 0.046590  loss_kpt: 0.046590  acc_pose: 0.794725
+2023/09/23 23:11:31 - mmengine - INFO - Epoch(train)  [51][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:52:52  time: 0.572232  data_time: 0.043345  memory: 6676  loss: 0.046902  loss_kpt: 0.046902  acc_pose: 0.741065
+2023/09/23 23:11:44 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:12:14 - mmengine - INFO - Epoch(train)  [52][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:52:03  time: 0.600890  data_time: 0.068973  memory: 6676  loss: 0.047424  loss_kpt: 0.047424  acc_pose: 0.746842
+2023/09/23 23:12:42 - mmengine - INFO - Epoch(train)  [52][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:51:29  time: 0.568891  data_time: 0.042275  memory: 6676  loss: 0.047574  loss_kpt: 0.047574  acc_pose: 0.775150
+2023/09/23 23:12:56 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:13:26 - mmengine - INFO - Epoch(train)  [53][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:50:41  time: 0.610426  data_time: 0.077431  memory: 6676  loss: 0.046792  loss_kpt: 0.046792  acc_pose: 0.745341
+2023/09/23 23:13:55 - mmengine - INFO - Epoch(train)  [53][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:50:07  time: 0.572196  data_time: 0.042737  memory: 6676  loss: 0.046654  loss_kpt: 0.046654  acc_pose: 0.765052
+2023/09/23 23:14:08 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:14:38 - mmengine - INFO - Epoch(train)  [54][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:49:19  time: 0.601117  data_time: 0.067646  memory: 6676  loss: 0.047176  loss_kpt: 0.047176  acc_pose: 0.681220
+2023/09/23 23:15:07 - mmengine - INFO - Epoch(train)  [54][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:48:46  time: 0.575569  data_time: 0.042273  memory: 6676  loss: 0.047719  loss_kpt: 0.047719  acc_pose: 0.700696
+2023/09/23 23:15:20 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:15:50 - mmengine - INFO - Epoch(train)  [55][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:47:58  time: 0.608278  data_time: 0.078355  memory: 6676  loss: 0.046833  loss_kpt: 0.046833  acc_pose: 0.797697
+2023/09/23 23:16:19 - mmengine - INFO - Epoch(train)  [55][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:47:24  time: 0.570181  data_time: 0.042532  memory: 6676  loss: 0.046320  loss_kpt: 0.046320  acc_pose: 0.774373
+2023/09/23 23:16:32 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:16:39 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:16:39 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:16:40 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:16:40 - mmengine - INFO - Epoch(val) [55][24/24]    PCK: 0.982782  AUC: 0.515860  EPE: 18.779212  data_time: 0.035387  time: 0.291762
+2023/09/23 23:16:40 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_50.pth is removed
+2023/09/23 23:16:41 - mmengine - INFO - The best checkpoint with 0.5159 AUC at 55 epoch is saved to best_AUC_epoch_55.pth.
+2023/09/23 23:17:16 - mmengine - INFO - Epoch(train)  [56][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:46:37  time: 0.613246  data_time: 0.076840  memory: 6676  loss: 0.045983  loss_kpt: 0.045983  acc_pose: 0.781688
+2023/09/23 23:17:45 - mmengine - INFO - Epoch(train)  [56][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:46:03  time: 0.567882  data_time: 0.041772  memory: 6676  loss: 0.046310  loss_kpt: 0.046310  acc_pose: 0.788151
+2023/09/23 23:17:58 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:18:28 - mmengine - INFO - Epoch(train)  [57][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:45:16  time: 0.610714  data_time: 0.076808  memory: 6676  loss: 0.046624  loss_kpt: 0.046624  acc_pose: 0.773813
+2023/09/23 23:18:32 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:18:57 - mmengine - INFO - Epoch(train)  [57][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:44:43  time: 0.570528  data_time: 0.043611  memory: 6676  loss: 0.047012  loss_kpt: 0.047012  acc_pose: 0.773435
+2023/09/23 23:19:10 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:19:40 - mmengine - INFO - Epoch(train)  [58][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:43:55  time: 0.602765  data_time: 0.065374  memory: 6676  loss: 0.046368  loss_kpt: 0.046368  acc_pose: 0.707911
+2023/09/23 23:20:09 - mmengine - INFO - Epoch(train)  [58][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:43:22  time: 0.575137  data_time: 0.047477  memory: 6676  loss: 0.046863  loss_kpt: 0.046863  acc_pose: 0.787129
+2023/09/23 23:20:22 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:20:52 - mmengine - INFO - Epoch(train)  [59][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:42:35  time: 0.610448  data_time: 0.077375  memory: 6676  loss: 0.046491  loss_kpt: 0.046491  acc_pose: 0.792937
+2023/09/23 23:21:21 - mmengine - INFO - Epoch(train)  [59][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:42:03  time: 0.574008  data_time: 0.042815  memory: 6676  loss: 0.046588  loss_kpt: 0.046588  acc_pose: 0.762810
+2023/09/23 23:21:34 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:22:05 - mmengine - INFO - Epoch(train)  [60][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:41:16  time: 0.610324  data_time: 0.065750  memory: 6676  loss: 0.046733  loss_kpt: 0.046733  acc_pose: 0.786811
+2023/09/23 23:22:33 - mmengine - INFO - Epoch(train)  [60][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:40:43  time: 0.568834  data_time: 0.043016  memory: 6676  loss: 0.046729  loss_kpt: 0.046729  acc_pose: 0.773924
+2023/09/23 23:22:47 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:22:47 - mmengine - INFO - Saving checkpoint at 60 epochs
+2023/09/23 23:22:58 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:22:58 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:22:58 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:22:58 - mmengine - INFO - Epoch(val) [60][24/24]    PCK: 0.981982  AUC: 0.517944  EPE: 18.857589  data_time: 0.032046  time: 0.295580
+2023/09/23 23:22:58 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_55.pth is removed
+2023/09/23 23:23:00 - mmengine - INFO - The best checkpoint with 0.5179 AUC at 60 epoch is saved to best_AUC_epoch_60.pth.
+2023/09/23 23:23:35 - mmengine - INFO - Epoch(train)  [61][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:39:56  time: 0.610743  data_time: 0.075631  memory: 6676  loss: 0.046533  loss_kpt: 0.046533  acc_pose: 0.791047
+2023/09/23 23:24:03 - mmengine - INFO - Epoch(train)  [61][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:39:23  time: 0.570579  data_time: 0.043395  memory: 6676  loss: 0.046437  loss_kpt: 0.046437  acc_pose: 0.787857
+2023/09/23 23:24:16 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:24:47 - mmengine - INFO - Epoch(train)  [62][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:38:36  time: 0.601848  data_time: 0.069199  memory: 6676  loss: 0.045803  loss_kpt: 0.045803  acc_pose: 0.740944
+2023/09/23 23:25:15 - mmengine - INFO - Epoch(train)  [62][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:38:04  time: 0.573281  data_time: 0.046418  memory: 6676  loss: 0.046532  loss_kpt: 0.046532  acc_pose: 0.730409
+2023/09/23 23:25:28 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:25:59 - mmengine - INFO - Epoch(train)  [63][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:37:17  time: 0.609672  data_time: 0.077755  memory: 6676  loss: 0.045833  loss_kpt: 0.045833  acc_pose: 0.791480
+2023/09/23 23:26:27 - mmengine - INFO - Epoch(train)  [63][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:36:45  time: 0.568016  data_time: 0.042338  memory: 6676  loss: 0.045932  loss_kpt: 0.045932  acc_pose: 0.824094
+2023/09/23 23:26:40 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:27:11 - mmengine - INFO - Epoch(train)  [64][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:35:58  time: 0.607098  data_time: 0.076679  memory: 6676  loss: 0.046256  loss_kpt: 0.046256  acc_pose: 0.765257
+2023/09/23 23:27:39 - mmengine - INFO - Epoch(train)  [64][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:35:26  time: 0.569283  data_time: 0.043552  memory: 6676  loss: 0.046266  loss_kpt: 0.046266  acc_pose: 0.793784
+2023/09/23 23:27:52 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:28:23 - mmengine - INFO - Epoch(train)  [65][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:34:39  time: 0.603646  data_time: 0.066340  memory: 6676  loss: 0.045955  loss_kpt: 0.045955  acc_pose: 0.746423
+2023/09/23 23:28:31 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:28:51 - mmengine - INFO - Epoch(train)  [65][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:34:07  time: 0.577009  data_time: 0.048671  memory: 6676  loss: 0.046331  loss_kpt: 0.046331  acc_pose: 0.777748
+2023/09/23 23:29:05 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:29:12 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:29:12 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:29:12 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:29:12 - mmengine - INFO - Epoch(val) [65][24/24]    PCK: 0.982952  AUC: 0.522201  EPE: 18.769311  data_time: 0.033880  time: 0.292421
+2023/09/23 23:29:12 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_60.pth is removed
+2023/09/23 23:29:14 - mmengine - INFO - The best checkpoint with 0.5222 AUC at 65 epoch is saved to best_AUC_epoch_65.pth.
+2023/09/23 23:29:49 - mmengine - INFO - Epoch(train)  [66][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:33:21  time: 0.614803  data_time: 0.075530  memory: 6676  loss: 0.046989  loss_kpt: 0.046989  acc_pose: 0.761536
+2023/09/23 23:30:18 - mmengine - INFO - Epoch(train)  [66][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:32:49  time: 0.571982  data_time: 0.043084  memory: 6676  loss: 0.046816  loss_kpt: 0.046816  acc_pose: 0.758991
+2023/09/23 23:30:31 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:31:01 - mmengine - INFO - Epoch(train)  [67][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:32:03  time: 0.604166  data_time: 0.071084  memory: 6676  loss: 0.046746  loss_kpt: 0.046746  acc_pose: 0.807703
+2023/09/23 23:31:30 - mmengine - INFO - Epoch(train)  [67][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:31:31  time: 0.576430  data_time: 0.047185  memory: 6676  loss: 0.046322  loss_kpt: 0.046322  acc_pose: 0.815287
+2023/09/23 23:31:43 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:32:13 - mmengine - INFO - Epoch(train)  [68][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:30:45  time: 0.603207  data_time: 0.071682  memory: 6676  loss: 0.045306  loss_kpt: 0.045306  acc_pose: 0.808436
+2023/09/23 23:32:42 - mmengine - INFO - Epoch(train)  [68][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:30:13  time: 0.575970  data_time: 0.047941  memory: 6676  loss: 0.045424  loss_kpt: 0.045424  acc_pose: 0.821428
+2023/09/23 23:32:55 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:33:26 - mmengine - INFO - Epoch(train)  [69][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:29:27  time: 0.609802  data_time: 0.077664  memory: 6676  loss: 0.045735  loss_kpt: 0.045735  acc_pose: 0.732014
+2023/09/23 23:33:54 - mmengine - INFO - Epoch(train)  [69][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:28:55  time: 0.569836  data_time: 0.042081  memory: 6676  loss: 0.046500  loss_kpt: 0.046500  acc_pose: 0.753966
+2023/09/23 23:34:07 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:34:37 - mmengine - INFO - Epoch(train)  [70][ 50/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:28:09  time: 0.603546  data_time: 0.071342  memory: 6676  loss: 0.045909  loss_kpt: 0.045909  acc_pose: 0.827901
+2023/09/23 23:35:06 - mmengine - INFO - Epoch(train)  [70][100/124]  base_lr: 2.000000e-03 lr: 2.000000e-03  eta: 1:27:37  time: 0.573568  data_time: 0.042146  memory: 6676  loss: 0.045371  loss_kpt: 0.045371  acc_pose: 0.762522
+2023/09/23 23:35:19 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:35:19 - mmengine - INFO - Saving checkpoint at 70 epochs
+2023/09/23 23:35:31 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:35:31 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:35:31 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:35:31 - mmengine - INFO - Epoch(val) [70][24/24]    PCK: 0.983517  AUC: 0.523849  EPE: 18.524162  data_time: 0.033966  time: 0.296723
+2023/09/23 23:35:31 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_65.pth is removed
+2023/09/23 23:35:33 - mmengine - INFO - The best checkpoint with 0.5238 AUC at 70 epoch is saved to best_AUC_epoch_70.pth.
+2023/09/23 23:36:08 - mmengine - INFO - Epoch(train)  [71][ 50/124]  base_lr: 1.999851e-03 lr: 1.999851e-03  eta: 1:26:51  time: 0.612260  data_time: 0.074869  memory: 6676  loss: 0.045417  loss_kpt: 0.045417  acc_pose: 0.768557
+2023/09/23 23:36:36 - mmengine - INFO - Epoch(train)  [71][100/124]  base_lr: 1.999390e-03 lr: 1.999390e-03  eta: 1:26:20  time: 0.570258  data_time: 0.044902  memory: 6676  loss: 0.045884  loss_kpt: 0.045884  acc_pose: 0.766797
+2023/09/23 23:36:49 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:37:20 - mmengine - INFO - Epoch(train)  [72][ 50/124]  base_lr: 1.998138e-03 lr: 1.998138e-03  eta: 1:25:34  time: 0.602583  data_time: 0.070493  memory: 6676  loss: 0.045973  loss_kpt: 0.045973  acc_pose: 0.764737
+2023/09/23 23:37:48 - mmengine - INFO - Epoch(train)  [72][100/124]  base_lr: 1.996907e-03 lr: 1.996907e-03  eta: 1:25:02  time: 0.575224  data_time: 0.048093  memory: 6676  loss: 0.046094  loss_kpt: 0.046094  acc_pose: 0.772789
+2023/09/23 23:38:01 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:38:32 - mmengine - INFO - Epoch(train)  [73][ 50/124]  base_lr: 1.994517e-03 lr: 1.994517e-03  eta: 1:24:16  time: 0.607388  data_time: 0.078748  memory: 6676  loss: 0.046087  loss_kpt: 0.046087  acc_pose: 0.750966
+2023/09/23 23:38:45 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:39:00 - mmengine - INFO - Epoch(train)  [73][100/124]  base_lr: 1.992518e-03 lr: 1.992518e-03  eta: 1:23:45  time: 0.570882  data_time: 0.044104  memory: 6676  loss: 0.046408  loss_kpt: 0.046408  acc_pose: 0.756047
+2023/09/23 23:39:13 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:39:44 - mmengine - INFO - Epoch(train)  [74][ 50/124]  base_lr: 1.988993e-03 lr: 1.988993e-03  eta: 1:22:59  time: 0.606845  data_time: 0.074195  memory: 6676  loss: 0.045880  loss_kpt: 0.045880  acc_pose: 0.836781
+2023/09/23 23:40:12 - mmengine - INFO - Epoch(train)  [74][100/124]  base_lr: 1.986230e-03 lr: 1.986230e-03  eta: 1:22:27  time: 0.569842  data_time: 0.043593  memory: 6676  loss: 0.045462  loss_kpt: 0.045462  acc_pose: 0.791684
+2023/09/23 23:40:26 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:40:56 - mmengine - INFO - Epoch(train)  [75][ 50/124]  base_lr: 1.981578e-03 lr: 1.981578e-03  eta: 1:21:42  time: 0.601428  data_time: 0.070574  memory: 6676  loss: 0.045405  loss_kpt: 0.045405  acc_pose: 0.784689
+2023/09/23 23:41:24 - mmengine - INFO - Epoch(train)  [75][100/124]  base_lr: 1.978056e-03 lr: 1.978056e-03  eta: 1:21:10  time: 0.577281  data_time: 0.044410  memory: 6676  loss: 0.045432  loss_kpt: 0.045432  acc_pose: 0.779170
+2023/09/23 23:41:38 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:41:45 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:41:45 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:41:45 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:41:45 - mmengine - INFO - Epoch(val) [75][24/24]    PCK: 0.983695  AUC: 0.526638  EPE: 18.384472  data_time: 0.032577  time: 0.289615
+2023/09/23 23:41:45 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_70.pth is removed
+2023/09/23 23:41:47 - mmengine - INFO - The best checkpoint with 0.5266 AUC at 75 epoch is saved to best_AUC_epoch_75.pth.
+2023/09/23 23:42:22 - mmengine - INFO - Epoch(train)  [76][ 50/124]  base_lr: 1.972287e-03 lr: 1.972287e-03  eta: 1:20:25  time: 0.609784  data_time: 0.070634  memory: 6676  loss: 0.045131  loss_kpt: 0.045131  acc_pose: 0.754122
+2023/09/23 23:42:51 - mmengine - INFO - Epoch(train)  [76][100/124]  base_lr: 1.968014e-03 lr: 1.968014e-03  eta: 1:19:54  time: 0.576983  data_time: 0.048176  memory: 6676  loss: 0.045683  loss_kpt: 0.045683  acc_pose: 0.773890
+2023/09/23 23:43:04 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:43:34 - mmengine - INFO - Epoch(train)  [77][ 50/124]  base_lr: 1.961139e-03 lr: 1.961139e-03  eta: 1:19:09  time: 0.613420  data_time: 0.080399  memory: 6676  loss: 0.044635  loss_kpt: 0.044635  acc_pose: 0.798496
+2023/09/23 23:44:03 - mmengine - INFO - Epoch(train)  [77][100/124]  base_lr: 1.956123e-03 lr: 1.956123e-03  eta: 1:18:37  time: 0.572026  data_time: 0.043752  memory: 6676  loss: 0.045205  loss_kpt: 0.045205  acc_pose: 0.820254
+2023/09/23 23:44:16 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:44:47 - mmengine - INFO - Epoch(train)  [78][ 50/124]  base_lr: 1.948156e-03 lr: 1.948156e-03  eta: 1:17:52  time: 0.607366  data_time: 0.070686  memory: 6676  loss: 0.045254  loss_kpt: 0.045254  acc_pose: 0.782332
+2023/09/23 23:45:16 - mmengine - INFO - Epoch(train)  [78][100/124]  base_lr: 1.942407e-03 lr: 1.942407e-03  eta: 1:17:21  time: 0.578489  data_time: 0.048445  memory: 6676  loss: 0.045176  loss_kpt: 0.045176  acc_pose: 0.807379
+2023/09/23 23:45:29 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:45:59 - mmengine - INFO - Epoch(train)  [79][ 50/124]  base_lr: 1.933364e-03 lr: 1.933364e-03  eta: 1:16:35  time: 0.601584  data_time: 0.065795  memory: 6676  loss: 0.044870  loss_kpt: 0.044870  acc_pose: 0.768585
+2023/09/23 23:46:28 - mmengine - INFO - Epoch(train)  [79][100/124]  base_lr: 1.926894e-03 lr: 1.926894e-03  eta: 1:16:04  time: 0.577118  data_time: 0.047321  memory: 6676  loss: 0.044571  loss_kpt: 0.044571  acc_pose: 0.800242
+2023/09/23 23:46:41 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:47:11 - mmengine - INFO - Epoch(train)  [80][ 50/124]  base_lr: 1.916793e-03 lr: 1.916793e-03  eta: 1:15:19  time: 0.610399  data_time: 0.073217  memory: 6676  loss: 0.044669  loss_kpt: 0.044669  acc_pose: 0.803702
+2023/09/23 23:47:40 - mmengine - INFO - Epoch(train)  [80][100/124]  base_lr: 1.909615e-03 lr: 1.909615e-03  eta: 1:14:48  time: 0.570079  data_time: 0.043337  memory: 6676  loss: 0.044663  loss_kpt: 0.044663  acc_pose: 0.802926
+2023/09/23 23:47:53 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:47:53 - mmengine - INFO - Saving checkpoint at 80 epochs
+2023/09/23 23:48:04 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:48:04 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:48:05 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:48:05 - mmengine - INFO - Epoch(val) [80][24/24]    PCK: 0.984546  AUC: 0.530828  EPE: 18.236090  data_time: 0.034774  time: 0.299414
+2023/09/23 23:48:05 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_75.pth is removed
+2023/09/23 23:48:07 - mmengine - INFO - The best checkpoint with 0.5308 AUC at 80 epoch is saved to best_AUC_epoch_80.pth.
+2023/09/23 23:48:41 - mmengine - INFO - Epoch(train)  [81][ 50/124]  base_lr: 1.898476e-03 lr: 1.898476e-03  eta: 1:14:03  time: 0.614253  data_time: 0.070245  memory: 6676  loss: 0.044691  loss_kpt: 0.044691  acc_pose: 0.784949
+2023/09/23 23:48:58 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:49:10 - mmengine - INFO - Epoch(train)  [81][100/124]  base_lr: 1.890605e-03 lr: 1.890605e-03  eta: 1:13:32  time: 0.569715  data_time: 0.044806  memory: 6676  loss: 0.044592  loss_kpt: 0.044592  acc_pose: 0.824158
+2023/09/23 23:49:23 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:49:53 - mmengine - INFO - Epoch(train)  [82][ 50/124]  base_lr: 1.878451e-03 lr: 1.878451e-03  eta: 1:12:47  time: 0.606729  data_time: 0.073115  memory: 6676  loss: 0.045074  loss_kpt: 0.045074  acc_pose: 0.790630
+2023/09/23 23:50:22 - mmengine - INFO - Epoch(train)  [82][100/124]  base_lr: 1.869902e-03 lr: 1.869902e-03  eta: 1:12:15  time: 0.572105  data_time: 0.043748  memory: 6676  loss: 0.045177  loss_kpt: 0.045177  acc_pose: 0.797517
+2023/09/23 23:50:35 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:51:06 - mmengine - INFO - Epoch(train)  [83][ 50/124]  base_lr: 1.856757e-03 lr: 1.856757e-03  eta: 1:11:30  time: 0.608081  data_time: 0.070860  memory: 6676  loss: 0.044965  loss_kpt: 0.044965  acc_pose: 0.739663
+2023/09/23 23:51:34 - mmengine - INFO - Epoch(train)  [83][100/124]  base_lr: 1.847548e-03 lr: 1.847548e-03  eta: 1:11:00  time: 0.575027  data_time: 0.043555  memory: 6676  loss: 0.044436  loss_kpt: 0.044436  acc_pose: 0.826949
+2023/09/23 23:51:48 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:52:18 - mmengine - INFO - Epoch(train)  [84][ 50/124]  base_lr: 1.833439e-03 lr: 1.833439e-03  eta: 1:10:14  time: 0.606463  data_time: 0.068978  memory: 6676  loss: 0.044377  loss_kpt: 0.044377  acc_pose: 0.837647
+2023/09/23 23:52:46 - mmengine - INFO - Epoch(train)  [84][100/124]  base_lr: 1.823587e-03 lr: 1.823587e-03  eta: 1:09:43  time: 0.570177  data_time: 0.042999  memory: 6676  loss: 0.045310  loss_kpt: 0.045310  acc_pose: 0.760443
+2023/09/23 23:53:00 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:53:30 - mmengine - INFO - Epoch(train)  [85][ 50/124]  base_lr: 1.808543e-03 lr: 1.808543e-03  eta: 1:08:58  time: 0.606680  data_time: 0.073844  memory: 6676  loss: 0.044225  loss_kpt: 0.044225  acc_pose: 0.755598
+2023/09/23 23:53:59 - mmengine - INFO - Epoch(train)  [85][100/124]  base_lr: 1.798069e-03 lr: 1.798069e-03  eta: 1:08:27  time: 0.575720  data_time: 0.048269  memory: 6676  loss: 0.044390  loss_kpt: 0.044390  acc_pose: 0.780718
+2023/09/23 23:54:12 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:54:19 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/23 23:54:19 - mmengine - INFO - Evaluating AUC...
+2023/09/23 23:54:20 - mmengine - INFO - Evaluating EPE...
+2023/09/23 23:54:20 - mmengine - INFO - Epoch(val) [85][24/24]    PCK: 0.983941  AUC: 0.531930  EPE: 18.139462  data_time: 0.035368  time: 0.300622
+2023/09/23 23:54:20 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_80.pth is removed
+2023/09/23 23:54:22 - mmengine - INFO - The best checkpoint with 0.5319 AUC at 85 epoch is saved to best_AUC_epoch_85.pth.
+2023/09/23 23:54:56 - mmengine - INFO - Epoch(train)  [86][ 50/124]  base_lr: 1.782119e-03 lr: 1.782119e-03  eta: 1:07:42  time: 0.607919  data_time: 0.069722  memory: 6676  loss: 0.044131  loss_kpt: 0.044131  acc_pose: 0.796708
+2023/09/23 23:55:25 - mmengine - INFO - Epoch(train)  [86][100/124]  base_lr: 1.771044e-03 lr: 1.771044e-03  eta: 1:07:12  time: 0.574625  data_time: 0.048052  memory: 6676  loss: 0.044998  loss_kpt: 0.044998  acc_pose: 0.841531
+2023/09/23 23:55:38 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:56:08 - mmengine - INFO - Epoch(train)  [87][ 50/124]  base_lr: 1.754221e-03 lr: 1.754221e-03  eta: 1:06:27  time: 0.612674  data_time: 0.076936  memory: 6676  loss: 0.044443  loss_kpt: 0.044443  acc_pose: 0.782223
+2023/09/23 23:56:37 - mmengine - INFO - Epoch(train)  [87][100/124]  base_lr: 1.742567e-03 lr: 1.742567e-03  eta: 1:05:56  time: 0.569888  data_time: 0.043473  memory: 6676  loss: 0.043571  loss_kpt: 0.043571  acc_pose: 0.758745
+2023/09/23 23:56:50 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:57:20 - mmengine - INFO - Epoch(train)  [88][ 50/124]  base_lr: 1.724905e-03 lr: 1.724905e-03  eta: 1:05:11  time: 0.605197  data_time: 0.070899  memory: 6676  loss: 0.043560  loss_kpt: 0.043560  acc_pose: 0.789964
+2023/09/23 23:57:49 - mmengine - INFO - Epoch(train)  [88][100/124]  base_lr: 1.712696e-03 lr: 1.712696e-03  eta: 1:04:40  time: 0.575759  data_time: 0.046718  memory: 6676  loss: 0.043393  loss_kpt: 0.043393  acc_pose: 0.810476
+2023/09/23 23:58:02 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:58:33 - mmengine - INFO - Epoch(train)  [89][ 50/124]  base_lr: 1.694229e-03 lr: 1.694229e-03  eta: 1:03:55  time: 0.609869  data_time: 0.071647  memory: 6676  loss: 0.043603  loss_kpt: 0.043603  acc_pose: 0.832855
+2023/09/23 23:58:54 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:59:01 - mmengine - INFO - Epoch(train)  [89][100/124]  base_lr: 1.681489e-03 lr: 1.681489e-03  eta: 1:03:25  time: 0.572118  data_time: 0.038591  memory: 6676  loss: 0.043314  loss_kpt: 0.043314  acc_pose: 0.819419
+2023/09/23 23:59:15 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/23 23:59:45 - mmengine - INFO - Epoch(train)  [90][ 50/124]  base_lr: 1.662256e-03 lr: 1.662256e-03  eta: 1:02:40  time: 0.604910  data_time: 0.070394  memory: 6676  loss: 0.043875  loss_kpt: 0.043875  acc_pose: 0.776494
+2023/09/24 00:00:14 - mmengine - INFO - Epoch(train)  [90][100/124]  base_lr: 1.649012e-03 lr: 1.649012e-03  eta: 1:02:09  time: 0.577482  data_time: 0.044041  memory: 6676  loss: 0.044142  loss_kpt: 0.044142  acc_pose: 0.823273
+2023/09/24 00:00:27 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:00:27 - mmengine - INFO - Saving checkpoint at 90 epochs
+2023/09/24 00:00:38 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:00:38 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:00:38 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:00:38 - mmengine - INFO - Epoch(val) [90][24/24]    PCK: 0.984862  AUC: 0.533565  EPE: 18.027839  data_time: 0.033901  time: 0.298557
+2023/09/24 00:00:39 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_85.pth is removed
+2023/09/24 00:00:40 - mmengine - INFO - The best checkpoint with 0.5336 AUC at 90 epoch is saved to best_AUC_epoch_90.pth.
+2023/09/24 00:01:15 - mmengine - INFO - Epoch(train)  [91][ 50/124]  base_lr: 1.629051e-03 lr: 1.629051e-03  eta: 1:01:24  time: 0.605878  data_time: 0.069924  memory: 6676  loss: 0.043955  loss_kpt: 0.043955  acc_pose: 0.800694
+2023/09/24 00:01:44 - mmengine - INFO - Epoch(train)  [91][100/124]  base_lr: 1.615327e-03 lr: 1.615327e-03  eta: 1:00:54  time: 0.575594  data_time: 0.046725  memory: 6676  loss: 0.043329  loss_kpt: 0.043329  acc_pose: 0.827072
+2023/09/24 00:01:57 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:02:27 - mmengine - INFO - Epoch(train)  [92][ 50/124]  base_lr: 1.594679e-03 lr: 1.594679e-03  eta: 1:00:09  time: 0.611562  data_time: 0.078291  memory: 6676  loss: 0.043114  loss_kpt: 0.043114  acc_pose: 0.804372
+2023/09/24 00:02:56 - mmengine - INFO - Epoch(train)  [92][100/124]  base_lr: 1.580505e-03 lr: 1.580505e-03  eta: 0:59:39  time: 0.574814  data_time: 0.048016  memory: 6676  loss: 0.043583  loss_kpt: 0.043583  acc_pose: 0.825868
+2023/09/24 00:03:09 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:03:39 - mmengine - INFO - Epoch(train)  [93][ 50/124]  base_lr: 1.559210e-03 lr: 1.559210e-03  eta: 0:58:54  time: 0.608021  data_time: 0.073512  memory: 6676  loss: 0.043217  loss_kpt: 0.043217  acc_pose: 0.808521
+2023/09/24 00:04:08 - mmengine - INFO - Epoch(train)  [93][100/124]  base_lr: 1.544613e-03 lr: 1.544613e-03  eta: 0:58:23  time: 0.569414  data_time: 0.039236  memory: 6676  loss: 0.043175  loss_kpt: 0.043175  acc_pose: 0.762552
+2023/09/24 00:04:21 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:04:52 - mmengine - INFO - Epoch(train)  [94][ 50/124]  base_lr: 1.522715e-03 lr: 1.522715e-03  eta: 0:57:38  time: 0.610913  data_time: 0.076256  memory: 6676  loss: 0.042581  loss_kpt: 0.042581  acc_pose: 0.823926
+2023/09/24 00:05:20 - mmengine - INFO - Epoch(train)  [94][100/124]  base_lr: 1.507726e-03 lr: 1.507726e-03  eta: 0:57:08  time: 0.572228  data_time: 0.039352  memory: 6676  loss: 0.042985  loss_kpt: 0.042985  acc_pose: 0.773185
+2023/09/24 00:05:34 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:06:04 - mmengine - INFO - Epoch(train)  [95][ 50/124]  base_lr: 1.485269e-03 lr: 1.485269e-03  eta: 0:56:23  time: 0.603847  data_time: 0.071403  memory: 6676  loss: 0.042915  loss_kpt: 0.042915  acc_pose: 0.787650
+2023/09/24 00:06:32 - mmengine - INFO - Epoch(train)  [95][100/124]  base_lr: 1.469917e-03 lr: 1.469917e-03  eta: 0:55:53  time: 0.574620  data_time: 0.046959  memory: 6676  loss: 0.042554  loss_kpt: 0.042554  acc_pose: 0.739552
+2023/09/24 00:06:45 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:06:53 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:06:53 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:06:53 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:06:53 - mmengine - INFO - Epoch(val) [95][24/24]    PCK: 0.983989  AUC: 0.535018  EPE: 17.985262  data_time: 0.041418  time: 0.298918
+2023/09/24 00:06:53 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_90.pth is removed
+2023/09/24 00:06:55 - mmengine - INFO - The best checkpoint with 0.5350 AUC at 95 epoch is saved to best_AUC_epoch_95.pth.
+2023/09/24 00:07:30 - mmengine - INFO - Epoch(train)  [96][ 50/124]  base_lr: 1.446946e-03 lr: 1.446946e-03  eta: 0:55:08  time: 0.608420  data_time: 0.069787  memory: 6676  loss: 0.042648  loss_kpt: 0.042648  acc_pose: 0.851809
+2023/09/24 00:07:58 - mmengine - INFO - Epoch(train)  [96][100/124]  base_lr: 1.431263e-03 lr: 1.431263e-03  eta: 0:54:38  time: 0.576130  data_time: 0.047340  memory: 6676  loss: 0.043009  loss_kpt: 0.043009  acc_pose: 0.823352
+2023/09/24 00:08:11 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:08:42 - mmengine - INFO - Epoch(train)  [97][ 50/124]  base_lr: 1.407824e-03 lr: 1.407824e-03  eta: 0:53:53  time: 0.610724  data_time: 0.076596  memory: 6676  loss: 0.042614  loss_kpt: 0.042614  acc_pose: 0.824927
+2023/09/24 00:09:08 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:09:11 - mmengine - INFO - Epoch(train)  [97][100/124]  base_lr: 1.391840e-03 lr: 1.391840e-03  eta: 0:53:23  time: 0.574508  data_time: 0.043490  memory: 6676  loss: 0.042571  loss_kpt: 0.042571  acc_pose: 0.839634
+2023/09/24 00:09:24 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:09:54 - mmengine - INFO - Epoch(train)  [98][ 50/124]  base_lr: 1.367981e-03 lr: 1.367981e-03  eta: 0:52:38  time: 0.606579  data_time: 0.075354  memory: 6676  loss: 0.041905  loss_kpt: 0.041905  acc_pose: 0.821130
+2023/09/24 00:10:23 - mmengine - INFO - Epoch(train)  [98][100/124]  base_lr: 1.351729e-03 lr: 1.351729e-03  eta: 0:52:07  time: 0.570839  data_time: 0.039533  memory: 6676  loss: 0.042640  loss_kpt: 0.042640  acc_pose: 0.808537
+2023/09/24 00:10:36 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:11:06 - mmengine - INFO - Epoch(train)  [99][ 50/124]  base_lr: 1.327497e-03 lr: 1.327497e-03  eta: 0:51:23  time: 0.606407  data_time: 0.073998  memory: 6676  loss: 0.041731  loss_kpt: 0.041731  acc_pose: 0.815046
+2023/09/24 00:11:35 - mmengine - INFO - Epoch(train)  [99][100/124]  base_lr: 1.311011e-03 lr: 1.311011e-03  eta: 0:50:52  time: 0.569162  data_time: 0.042755  memory: 6676  loss: 0.042359  loss_kpt: 0.042359  acc_pose: 0.801390
+2023/09/24 00:11:48 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:12:18 - mmengine - INFO - Epoch(train) [100][ 50/124]  base_lr: 1.286455e-03 lr: 1.286455e-03  eta: 0:50:08  time: 0.605149  data_time: 0.070830  memory: 6676  loss: 0.042179  loss_kpt: 0.042179  acc_pose: 0.880810
+2023/09/24 00:12:47 - mmengine - INFO - Epoch(train) [100][100/124]  base_lr: 1.269767e-03 lr: 1.269767e-03  eta: 0:49:38  time: 0.576956  data_time: 0.048829  memory: 6676  loss: 0.041938  loss_kpt: 0.041938  acc_pose: 0.820128
+2023/09/24 00:13:00 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:13:00 - mmengine - INFO - Saving checkpoint at 100 epochs
+2023/09/24 00:13:12 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:13:12 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:13:12 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:13:12 - mmengine - INFO - Epoch(val) [100][24/24]    PCK: 0.984164  AUC: 0.537366  EPE: 17.802924  data_time: 0.033827  time: 0.300143
+2023/09/24 00:13:12 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_95.pth is removed
+2023/09/24 00:13:14 - mmengine - INFO - The best checkpoint with 0.5374 AUC at 100 epoch is saved to best_AUC_epoch_100.pth.
+2023/09/24 00:13:49 - mmengine - INFO - Epoch(train) [101][ 50/124]  base_lr: 1.244937e-03 lr: 1.244937e-03  eta: 0:48:53  time: 0.608519  data_time: 0.070637  memory: 6676  loss: 0.041852  loss_kpt: 0.041852  acc_pose: 0.832385
+2023/09/24 00:14:17 - mmengine - INFO - Epoch(train) [101][100/124]  base_lr: 1.228080e-03 lr: 1.228080e-03  eta: 0:48:23  time: 0.576407  data_time: 0.043669  memory: 6676  loss: 0.041319  loss_kpt: 0.041319  acc_pose: 0.824165
+2023/09/24 00:14:30 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:15:01 - mmengine - INFO - Epoch(train) [102][ 50/124]  base_lr: 1.203026e-03 lr: 1.203026e-03  eta: 0:47:38  time: 0.612414  data_time: 0.077301  memory: 6676  loss: 0.041273  loss_kpt: 0.041273  acc_pose: 0.844163
+2023/09/24 00:15:30 - mmengine - INFO - Epoch(train) [102][100/124]  base_lr: 1.186034e-03 lr: 1.186034e-03  eta: 0:47:08  time: 0.573056  data_time: 0.043898  memory: 6676  loss: 0.041505  loss_kpt: 0.041505  acc_pose: 0.832102
+2023/09/24 00:15:43 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:16:13 - mmengine - INFO - Epoch(train) [103][ 50/124]  base_lr: 1.160807e-03 lr: 1.160807e-03  eta: 0:46:24  time: 0.605921  data_time: 0.071346  memory: 6676  loss: 0.041510  loss_kpt: 0.041510  acc_pose: 0.807594
+2023/09/24 00:16:42 - mmengine - INFO - Epoch(train) [103][100/124]  base_lr: 1.143715e-03 lr: 1.143715e-03  eta: 0:45:53  time: 0.575632  data_time: 0.042594  memory: 6676  loss: 0.041698  loss_kpt: 0.041698  acc_pose: 0.838595
+2023/09/24 00:16:55 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:17:25 - mmengine - INFO - Epoch(train) [104][ 50/124]  base_lr: 1.118365e-03 lr: 1.118365e-03  eta: 0:45:09  time: 0.605686  data_time: 0.072422  memory: 6676  loss: 0.041330  loss_kpt: 0.041330  acc_pose: 0.819454
+2023/09/24 00:17:54 - mmengine - INFO - Epoch(train) [104][100/124]  base_lr: 1.101207e-03 lr: 1.101207e-03  eta: 0:44:39  time: 0.571734  data_time: 0.043369  memory: 6676  loss: 0.041141  loss_kpt: 0.041141  acc_pose: 0.852852
+2023/09/24 00:18:07 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:18:38 - mmengine - INFO - Epoch(train) [105][ 50/124]  base_lr: 1.075785e-03 lr: 1.075785e-03  eta: 0:43:54  time: 0.607606  data_time: 0.074120  memory: 6676  loss: 0.041326  loss_kpt: 0.041326  acc_pose: 0.834038
+2023/09/24 00:19:06 - mmengine - INFO - Epoch(train) [105][100/124]  base_lr: 1.058596e-03 lr: 1.058596e-03  eta: 0:43:24  time: 0.571017  data_time: 0.042793  memory: 6676  loss: 0.040690  loss_kpt: 0.040690  acc_pose: 0.843058
+2023/09/24 00:19:09 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:19:19 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:19:27 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:19:27 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:19:27 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:19:27 - mmengine - INFO - Epoch(val) [105][24/24]    PCK: 0.985291  AUC: 0.539123  EPE: 17.595737  data_time: 0.036053  time: 0.294458
+2023/09/24 00:19:27 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_100.pth is removed
+2023/09/24 00:19:29 - mmengine - INFO - The best checkpoint with 0.5391 AUC at 105 epoch is saved to best_AUC_epoch_105.pth.
+2023/09/24 00:20:04 - mmengine - INFO - Epoch(train) [106][ 50/124]  base_lr: 1.033153e-03 lr: 1.033153e-03  eta: 0:42:40  time: 0.614731  data_time: 0.075414  memory: 6676  loss: 0.040508  loss_kpt: 0.040508  acc_pose: 0.832030
+2023/09/24 00:20:32 - mmengine - INFO - Epoch(train) [106][100/124]  base_lr: 1.015967e-03 lr: 1.015967e-03  eta: 0:42:10  time: 0.571252  data_time: 0.038994  memory: 6676  loss: 0.040680  loss_kpt: 0.040680  acc_pose: 0.832390
+2023/09/24 00:20:46 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:21:16 - mmengine - INFO - Epoch(train) [107][ 50/124]  base_lr: 9.905549e-04 lr: 9.905549e-04  eta: 0:41:25  time: 0.604041  data_time: 0.071141  memory: 6676  loss: 0.040168  loss_kpt: 0.040168  acc_pose: 0.868462
+2023/09/24 00:21:45 - mmengine - INFO - Epoch(train) [107][100/124]  base_lr: 9.734074e-04 lr: 9.734074e-04  eta: 0:40:55  time: 0.574564  data_time: 0.047206  memory: 6676  loss: 0.040027  loss_kpt: 0.040027  acc_pose: 0.856820
+2023/09/24 00:21:58 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:22:28 - mmengine - INFO - Epoch(train) [108][ 50/124]  base_lr: 9.480767e-04 lr: 9.480767e-04  eta: 0:40:11  time: 0.611742  data_time: 0.072783  memory: 6676  loss: 0.040304  loss_kpt: 0.040304  acc_pose: 0.883566
+2023/09/24 00:22:57 - mmengine - INFO - Epoch(train) [108][100/124]  base_lr: 9.310017e-04 lr: 9.310017e-04  eta: 0:39:40  time: 0.570121  data_time: 0.038880  memory: 6676  loss: 0.039896  loss_kpt: 0.039896  acc_pose: 0.849594
+2023/09/24 00:23:10 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:23:40 - mmengine - INFO - Epoch(train) [109][ 50/124]  base_lr: 9.058037e-04 lr: 9.058037e-04  eta: 0:38:56  time: 0.602859  data_time: 0.070350  memory: 6676  loss: 0.039529  loss_kpt: 0.039529  acc_pose: 0.855848
+2023/09/24 00:24:09 - mmengine - INFO - Epoch(train) [109][100/124]  base_lr: 8.888356e-04 lr: 8.888356e-04  eta: 0:38:26  time: 0.574259  data_time: 0.043124  memory: 6676  loss: 0.040189  loss_kpt: 0.040189  acc_pose: 0.860751
+2023/09/24 00:24:22 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:24:52 - mmengine - INFO - Epoch(train) [110][ 50/124]  base_lr: 8.638212e-04 lr: 8.638212e-04  eta: 0:37:42  time: 0.610439  data_time: 0.077303  memory: 6676  loss: 0.039929  loss_kpt: 0.039929  acc_pose: 0.852991
+2023/09/24 00:25:21 - mmengine - INFO - Epoch(train) [110][100/124]  base_lr: 8.469941e-04 lr: 8.469941e-04  eta: 0:37:12  time: 0.572742  data_time: 0.044032  memory: 6676  loss: 0.040098  loss_kpt: 0.040098  acc_pose: 0.829706
+2023/09/24 00:25:34 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:25:34 - mmengine - INFO - Saving checkpoint at 110 epochs
+2023/09/24 00:25:46 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:25:46 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:25:46 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:25:46 - mmengine - INFO - Epoch(val) [110][24/24]    PCK: 0.985222  AUC: 0.539425  EPE: 17.672206  data_time: 0.041821  time: 0.306983
+2023/09/24 00:25:46 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_105.pth is removed
+2023/09/24 00:25:48 - mmengine - INFO - The best checkpoint with 0.5394 AUC at 110 epoch is saved to best_AUC_epoch_110.pth.
+2023/09/24 00:25:52 - mmengine - INFO - Switch pipeline now!
+2023/09/24 00:27:09 - mmengine - INFO - Epoch(train) [111][ 50/124]  base_lr: 8.222136e-04 lr: 8.222136e-04  eta: 0:36:40  time: 1.541050  data_time: 0.998394  memory: 6676  loss: 0.037607  loss_kpt: 0.037607  acc_pose: 0.901190
+2023/09/24 00:27:38 - mmengine - INFO - Epoch(train) [111][100/124]  base_lr: 8.055614e-04 lr: 8.055614e-04  eta: 0:36:10  time: 0.577281  data_time: 0.047795  memory: 6676  loss: 0.036937  loss_kpt: 0.036937  acc_pose: 0.909945
+2023/09/24 00:27:51 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:28:22 - mmengine - INFO - Epoch(train) [112][ 50/124]  base_lr: 7.810647e-04 lr: 7.810647e-04  eta: 0:35:25  time: 0.614596  data_time: 0.076287  memory: 6676  loss: 0.036492  loss_kpt: 0.036492  acc_pose: 0.917218
+2023/09/24 00:28:51 - mmengine - INFO - Epoch(train) [112][100/124]  base_lr: 7.646210e-04 lr: 7.646210e-04  eta: 0:34:55  time: 0.575498  data_time: 0.044858  memory: 6676  loss: 0.036830  loss_kpt: 0.036830  acc_pose: 0.917539
+2023/09/24 00:29:04 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:29:35 - mmengine - INFO - Epoch(train) [113][ 50/124]  base_lr: 7.404574e-04 lr: 7.404574e-04  eta: 0:34:10  time: 0.609713  data_time: 0.070660  memory: 6676  loss: 0.036629  loss_kpt: 0.036629  acc_pose: 0.921326
+2023/09/24 00:30:03 - mmengine - INFO - Epoch(train) [113][100/124]  base_lr: 7.242553e-04 lr: 7.242553e-04  eta: 0:33:40  time: 0.574665  data_time: 0.042932  memory: 6676  loss: 0.036547  loss_kpt: 0.036547  acc_pose: 0.912175
+2023/09/24 00:30:10 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:30:17 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:30:47 - mmengine - INFO - Epoch(train) [114][ 50/124]  base_lr: 7.004735e-04 lr: 7.004735e-04  eta: 0:32:55  time: 0.605567  data_time: 0.071060  memory: 6676  loss: 0.036230  loss_kpt: 0.036230  acc_pose: 0.880735
+2023/09/24 00:31:16 - mmengine - INFO - Epoch(train) [114][100/124]  base_lr: 6.845456e-04 lr: 6.845456e-04  eta: 0:32:25  time: 0.581795  data_time: 0.048222  memory: 6676  loss: 0.036621  loss_kpt: 0.036621  acc_pose: 0.907009
+2023/09/24 00:31:29 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:32:00 - mmengine - INFO - Epoch(train) [115][ 50/124]  base_lr: 6.611935e-04 lr: 6.611935e-04  eta: 0:31:41  time: 0.613012  data_time: 0.080828  memory: 6676  loss: 0.036134  loss_kpt: 0.036134  acc_pose: 0.896724
+2023/09/24 00:32:28 - mmengine - INFO - Epoch(train) [115][100/124]  base_lr: 6.455719e-04 lr: 6.455719e-04  eta: 0:31:11  time: 0.575461  data_time: 0.044641  memory: 6676  loss: 0.035904  loss_kpt: 0.035904  acc_pose: 0.899523
+2023/09/24 00:32:42 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:32:49 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:32:49 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:32:49 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:32:49 - mmengine - INFO - Epoch(val) [115][24/24]    PCK: 0.984963  AUC: 0.540280  EPE: 17.690153  data_time: 0.033755  time: 0.292126
+2023/09/24 00:32:49 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_110.pth is removed
+2023/09/24 00:32:51 - mmengine - INFO - The best checkpoint with 0.5403 AUC at 115 epoch is saved to best_AUC_epoch_115.pth.
+2023/09/24 00:33:26 - mmengine - INFO - Epoch(train) [116][ 50/124]  base_lr: 6.226965e-04 lr: 6.226965e-04  eta: 0:30:26  time: 0.616149  data_time: 0.074916  memory: 6676  loss: 0.035363  loss_kpt: 0.035363  acc_pose: 0.906271
+2023/09/24 00:33:55 - mmengine - INFO - Epoch(train) [116][100/124]  base_lr: 6.074126e-04 lr: 6.074126e-04  eta: 0:29:56  time: 0.576093  data_time: 0.048731  memory: 6676  loss: 0.035823  loss_kpt: 0.035823  acc_pose: 0.920233
+2023/09/24 00:34:08 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:34:39 - mmengine - INFO - Epoch(train) [117][ 50/124]  base_lr: 5.850600e-04 lr: 5.850600e-04  eta: 0:29:12  time: 0.617515  data_time: 0.072891  memory: 6676  loss: 0.035396  loss_kpt: 0.035396  acc_pose: 0.923839
+2023/09/24 00:35:07 - mmengine - INFO - Epoch(train) [117][100/124]  base_lr: 5.701447e-04 lr: 5.701447e-04  eta: 0:28:41  time: 0.573363  data_time: 0.044064  memory: 6676  loss: 0.035519  loss_kpt: 0.035519  acc_pose: 0.906268
+2023/09/24 00:35:21 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:35:51 - mmengine - INFO - Epoch(train) [118][ 50/124]  base_lr: 5.483599e-04 lr: 5.483599e-04  eta: 0:27:57  time: 0.611778  data_time: 0.070618  memory: 6676  loss: 0.035022  loss_kpt: 0.035022  acc_pose: 0.938121
+2023/09/24 00:36:20 - mmengine - INFO - Epoch(train) [118][100/124]  base_lr: 5.338431e-04 lr: 5.338431e-04  eta: 0:27:27  time: 0.575303  data_time: 0.038512  memory: 6676  loss: 0.035187  loss_kpt: 0.035187  acc_pose: 0.892766
+2023/09/24 00:36:33 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:37:04 - mmengine - INFO - Epoch(train) [119][ 50/124]  base_lr: 5.126700e-04 lr: 5.126700e-04  eta: 0:26:42  time: 0.606197  data_time: 0.071429  memory: 6676  loss: 0.034864  loss_kpt: 0.034864  acc_pose: 0.931995
+2023/09/24 00:37:32 - mmengine - INFO - Epoch(train) [119][100/124]  base_lr: 4.985810e-04 lr: 4.985810e-04  eta: 0:26:12  time: 0.575925  data_time: 0.042977  memory: 6676  loss: 0.035262  loss_kpt: 0.035262  acc_pose: 0.935651
+2023/09/24 00:37:45 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:38:16 - mmengine - INFO - Epoch(train) [120][ 50/124]  base_lr: 4.780622e-04 lr: 4.780622e-04  eta: 0:25:28  time: 0.608674  data_time: 0.075086  memory: 6676  loss: 0.034534  loss_kpt: 0.034534  acc_pose: 0.911480
+2023/09/24 00:38:44 - mmengine - INFO - Epoch(train) [120][100/124]  base_lr: 4.644294e-04 lr: 4.644294e-04  eta: 0:24:58  time: 0.570378  data_time: 0.042498  memory: 6676  loss: 0.034832  loss_kpt: 0.034832  acc_pose: 0.908271
+2023/09/24 00:38:58 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:38:58 - mmengine - INFO - Saving checkpoint at 120 epochs
+2023/09/24 00:39:09 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:39:09 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:39:09 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:39:09 - mmengine - INFO - Epoch(val) [120][24/24]    PCK: 0.984612  AUC: 0.541042  EPE: 17.727967  data_time: 0.034436  time: 0.299398
+2023/09/24 00:39:09 - mmengine - INFO - The previous best checkpoint D:\mmpose\work_dirs\rtmpose-m_deepfasion2-long-sleeved-dress-256x192\best_AUC_epoch_115.pth is removed
+2023/09/24 00:39:11 - mmengine - INFO - The best checkpoint with 0.5410 AUC at 120 epoch is saved to best_AUC_epoch_120.pth.
+2023/09/24 00:39:46 - mmengine - INFO - Epoch(train) [121][ 50/124]  base_lr: 4.446062e-04 lr: 4.446062e-04  eta: 0:24:13  time: 0.619219  data_time: 0.075822  memory: 6676  loss: 0.034562  loss_kpt: 0.034562  acc_pose: 0.919494
+2023/09/24 00:40:15 - mmengine - INFO - Epoch(train) [121][100/124]  base_lr: 4.314571e-04 lr: 4.314571e-04  eta: 0:23:43  time: 0.572888  data_time: 0.043944  memory: 6676  loss: 0.034331  loss_kpt: 0.034331  acc_pose: 0.916119
+2023/09/24 00:40:26 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:40:28 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:40:58 - mmengine - INFO - Epoch(train) [122][ 50/124]  base_lr: 4.123694e-04 lr: 4.123694e-04  eta: 0:22:59  time: 0.604883  data_time: 0.069862  memory: 6676  loss: 0.034260  loss_kpt: 0.034260  acc_pose: 0.908414
+2023/09/24 00:41:27 - mmengine - INFO - Epoch(train) [122][100/124]  base_lr: 3.997304e-04 lr: 3.997304e-04  eta: 0:22:29  time: 0.577867  data_time: 0.047615  memory: 6676  loss: 0.034619  loss_kpt: 0.034619  acc_pose: 0.922242
+2023/09/24 00:41:41 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:42:11 - mmengine - INFO - Epoch(train) [123][ 50/124]  base_lr: 3.814167e-04 lr: 3.814167e-04  eta: 0:21:45  time: 0.612583  data_time: 0.074311  memory: 6676  loss: 0.034249  loss_kpt: 0.034249  acc_pose: 0.933254
+2023/09/24 00:42:40 - mmengine - INFO - Epoch(train) [123][100/124]  base_lr: 3.693132e-04 lr: 3.693132e-04  eta: 0:21:15  time: 0.575159  data_time: 0.043902  memory: 6676  loss: 0.034124  loss_kpt: 0.034124  acc_pose: 0.934705
+2023/09/24 00:42:53 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:43:24 - mmengine - INFO - Epoch(train) [124][ 50/124]  base_lr: 3.518104e-04 lr: 3.518104e-04  eta: 0:20:30  time: 0.607086  data_time: 0.066394  memory: 6676  loss: 0.033929  loss_kpt: 0.033929  acc_pose: 0.912709
+2023/09/24 00:43:52 - mmengine - INFO - Epoch(train) [124][100/124]  base_lr: 3.402669e-04 lr: 3.402669e-04  eta: 0:20:00  time: 0.575037  data_time: 0.042553  memory: 6676  loss: 0.034016  loss_kpt: 0.034016  acc_pose: 0.936507
+2023/09/24 00:44:05 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:44:36 - mmengine - INFO - Epoch(train) [125][ 50/124]  base_lr: 3.236102e-04 lr: 3.236102e-04  eta: 0:19:16  time: 0.613317  data_time: 0.079302  memory: 6676  loss: 0.033593  loss_kpt: 0.033593  acc_pose: 0.946086
+2023/09/24 00:45:05 - mmengine - INFO - Epoch(train) [125][100/124]  base_lr: 3.126499e-04 lr: 3.126499e-04  eta: 0:18:46  time: 0.576779  data_time: 0.048937  memory: 6676  loss: 0.033753  loss_kpt: 0.033753  acc_pose: 0.926507
+2023/09/24 00:45:18 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:45:25 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:45:25 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:45:26 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:45:26 - mmengine - INFO - Epoch(val) [125][24/24]    PCK: 0.985002  AUC: 0.541014  EPE: 17.674429  data_time: 0.033934  time: 0.299991
+2023/09/24 00:45:56 - mmengine - INFO - Epoch(train) [126][ 50/124]  base_lr: 2.968729e-04 lr: 2.968729e-04  eta: 0:18:01  time: 0.608469  data_time: 0.072125  memory: 6676  loss: 0.033576  loss_kpt: 0.033576  acc_pose: 0.910484
+2023/09/24 00:46:25 - mmengine - INFO - Epoch(train) [126][100/124]  base_lr: 2.865178e-04 lr: 2.865178e-04  eta: 0:17:31  time: 0.571059  data_time: 0.038672  memory: 6676  loss: 0.033477  loss_kpt: 0.033477  acc_pose: 0.925916
+2023/09/24 00:46:38 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:47:09 - mmengine - INFO - Epoch(train) [127][ 50/124]  base_lr: 2.716522e-04 lr: 2.716522e-04  eta: 0:16:47  time: 0.612599  data_time: 0.067114  memory: 6676  loss: 0.033081  loss_kpt: 0.033081  acc_pose: 0.922196
+2023/09/24 00:47:37 - mmengine - INFO - Epoch(train) [127][100/124]  base_lr: 2.619233e-04 lr: 2.619233e-04  eta: 0:16:17  time: 0.574197  data_time: 0.044151  memory: 6676  loss: 0.033501  loss_kpt: 0.033501  acc_pose: 0.942433
+2023/09/24 00:47:51 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:48:21 - mmengine - INFO - Epoch(train) [128][ 50/124]  base_lr: 2.479990e-04 lr: 2.479990e-04  eta: 0:15:33  time: 0.608215  data_time: 0.074151  memory: 6676  loss: 0.033311  loss_kpt: 0.033311  acc_pose: 0.934188
+2023/09/24 00:48:50 - mmengine - INFO - Epoch(train) [128][100/124]  base_lr: 2.389158e-04 lr: 2.389158e-04  eta: 0:15:03  time: 0.575496  data_time: 0.049257  memory: 6676  loss: 0.033327  loss_kpt: 0.033327  acc_pose: 0.938058
+2023/09/24 00:49:03 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:49:33 - mmengine - INFO - Epoch(train) [129][ 50/124]  base_lr: 2.259610e-04 lr: 2.259610e-04  eta: 0:14:19  time: 0.611839  data_time: 0.072335  memory: 6676  loss: 0.032921  loss_kpt: 0.032921  acc_pose: 0.939920
+2023/09/24 00:50:02 - mmengine - INFO - Epoch(train) [129][100/124]  base_lr: 2.175418e-04 lr: 2.175418e-04  eta: 0:13:49  time: 0.572655  data_time: 0.042613  memory: 6676  loss: 0.033396  loss_kpt: 0.033396  acc_pose: 0.925857
+2023/09/24 00:50:15 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:50:20 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:50:46 - mmengine - INFO - Epoch(train) [130][ 50/124]  base_lr: 2.055825e-04 lr: 2.055825e-04  eta: 0:13:04  time: 0.608661  data_time: 0.072695  memory: 6676  loss: 0.032922  loss_kpt: 0.032922  acc_pose: 0.932385
+2023/09/24 00:51:15 - mmengine - INFO - Epoch(train) [130][100/124]  base_lr: 1.978442e-04 lr: 1.978442e-04  eta: 0:12:34  time: 0.578720  data_time: 0.044137  memory: 6676  loss: 0.033285  loss_kpt: 0.033285  acc_pose: 0.938156
+2023/09/24 00:51:28 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:51:28 - mmengine - INFO - Saving checkpoint at 130 epochs
+2023/09/24 00:51:39 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:51:39 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:51:40 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:51:40 - mmengine - INFO - Epoch(val) [130][24/24]    PCK: 0.985024  AUC: 0.540945  EPE: 17.684909  data_time: 0.033288  time: 0.294859
+2023/09/24 00:52:10 - mmengine - INFO - Epoch(train) [131][ 50/124]  base_lr: 1.869045e-04 lr: 1.869045e-04  eta: 0:11:50  time: 0.604779  data_time: 0.069258  memory: 6676  loss: 0.032817  loss_kpt: 0.032817  acc_pose: 0.925239
+2023/09/24 00:52:39 - mmengine - INFO - Epoch(train) [131][100/124]  base_lr: 1.798628e-04 lr: 1.798628e-04  eta: 0:11:20  time: 0.578991  data_time: 0.049767  memory: 6676  loss: 0.032685  loss_kpt: 0.032685  acc_pose: 0.942268
+2023/09/24 00:52:52 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:53:22 - mmengine - INFO - Epoch(train) [132][ 50/124]  base_lr: 1.699646e-04 lr: 1.699646e-04  eta: 0:10:36  time: 0.610146  data_time: 0.075387  memory: 6676  loss: 0.032810  loss_kpt: 0.032810  acc_pose: 0.943759
+2023/09/24 00:53:51 - mmengine - INFO - Epoch(train) [132][100/124]  base_lr: 1.636336e-04 lr: 1.636336e-04  eta: 0:10:06  time: 0.573092  data_time: 0.042991  memory: 6676  loss: 0.032856  loss_kpt: 0.032856  acc_pose: 0.924280
+2023/09/24 00:54:04 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:54:35 - mmengine - INFO - Epoch(train) [133][ 50/124]  base_lr: 1.547971e-04 lr: 1.547971e-04  eta: 0:09:22  time: 0.603503  data_time: 0.071246  memory: 6676  loss: 0.032570  loss_kpt: 0.032570  acc_pose: 0.927469
+2023/09/24 00:55:03 - mmengine - INFO - Epoch(train) [133][100/124]  base_lr: 1.491896e-04 lr: 1.491896e-04  eta: 0:08:52  time: 0.576686  data_time: 0.047835  memory: 6676  loss: 0.032936  loss_kpt: 0.032936  acc_pose: 0.950610
+2023/09/24 00:55:17 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:55:47 - mmengine - INFO - Epoch(train) [134][ 50/124]  base_lr: 1.414323e-04 lr: 1.414323e-04  eta: 0:08:08  time: 0.602732  data_time: 0.070843  memory: 6676  loss: 0.032341  loss_kpt: 0.032341  acc_pose: 0.932354
+2023/09/24 00:56:16 - mmengine - INFO - Epoch(train) [134][100/124]  base_lr: 1.365596e-04 lr: 1.365596e-04  eta: 0:07:38  time: 0.573042  data_time: 0.047405  memory: 6676  loss: 0.032745  loss_kpt: 0.032745  acc_pose: 0.932332
+2023/09/24 00:56:29 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:56:59 - mmengine - INFO - Epoch(train) [135][ 50/124]  base_lr: 1.298973e-04 lr: 1.298973e-04  eta: 0:06:54  time: 0.611737  data_time: 0.077044  memory: 6676  loss: 0.032438  loss_kpt: 0.032438  acc_pose: 0.953655
+2023/09/24 00:57:28 - mmengine - INFO - Epoch(train) [135][100/124]  base_lr: 1.257691e-04 lr: 1.257691e-04  eta: 0:06:24  time: 0.571200  data_time: 0.042655  memory: 6676  loss: 0.032651  loss_kpt: 0.032651  acc_pose: 0.942705
+2023/09/24 00:57:41 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:57:48 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 00:57:48 - mmengine - INFO - Evaluating AUC...
+2023/09/24 00:57:48 - mmengine - INFO - Evaluating EPE...
+2023/09/24 00:57:48 - mmengine - INFO - Epoch(val) [135][24/24]    PCK: 0.985243  AUC: 0.540432  EPE: 17.671333  data_time: 0.034374  time: 0.292414
+2023/09/24 00:58:19 - mmengine - INFO - Epoch(train) [136][ 50/124]  base_lr: 1.202153e-04 lr: 1.202153e-04  eta: 0:05:40  time: 0.610091  data_time: 0.074492  memory: 6676  loss: 0.032522  loss_kpt: 0.032522  acc_pose: 0.950499
+2023/09/24 00:58:48 - mmengine - INFO - Epoch(train) [136][100/124]  base_lr: 1.168400e-04 lr: 1.168400e-04  eta: 0:05:10  time: 0.574169  data_time: 0.044473  memory: 6676  loss: 0.032392  loss_kpt: 0.032392  acc_pose: 0.961810
+2023/09/24 00:59:01 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 00:59:31 - mmengine - INFO - Epoch(train) [137][ 50/124]  base_lr: 1.124057e-04 lr: 1.124057e-04  eta: 0:04:26  time: 0.605025  data_time: 0.066386  memory: 6676  loss: 0.032327  loss_kpt: 0.032327  acc_pose: 0.923216
+2023/09/24 01:00:00 - mmengine - INFO - Epoch(train) [137][100/124]  base_lr: 1.097901e-04 lr: 1.097901e-04  eta: 0:03:56  time: 0.577227  data_time: 0.047200  memory: 6676  loss: 0.032414  loss_kpt: 0.032414  acc_pose: 0.946017
+2023/09/24 01:00:13 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 01:00:22 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 01:00:44 - mmengine - INFO - Epoch(train) [138][ 50/124]  base_lr: 1.064843e-04 lr: 1.064843e-04  eta: 0:03:12  time: 0.604389  data_time: 0.070227  memory: 6676  loss: 0.032158  loss_kpt: 0.032158  acc_pose: 0.952210
+2023/09/24 01:01:12 - mmengine - INFO - Epoch(train) [138][100/124]  base_lr: 1.046337e-04 lr: 1.046337e-04  eta: 0:02:42  time: 0.575909  data_time: 0.048560  memory: 6676  loss: 0.032713  loss_kpt: 0.032713  acc_pose: 0.941434
+2023/09/24 01:01:26 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 01:01:56 - mmengine - INFO - Epoch(train) [139][ 50/124]  base_lr: 1.024630e-04 lr: 1.024630e-04  eta: 0:01:58  time: 0.607145  data_time: 0.073398  memory: 6676  loss: 0.032256  loss_kpt: 0.032256  acc_pose: 0.946885
+2023/09/24 01:02:25 - mmengine - INFO - Epoch(train) [139][100/124]  base_lr: 1.013811e-04 lr: 1.013811e-04  eta: 0:01:28  time: 0.573273  data_time: 0.042869  memory: 6676  loss: 0.032293  loss_kpt: 0.032293  acc_pose: 0.926483
+2023/09/24 01:02:38 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 01:03:09 - mmengine - INFO - Epoch(train) [140][ 50/124]  base_lr: 1.003500e-04 lr: 1.003500e-04  eta: 0:00:44  time: 0.610812  data_time: 0.074956  memory: 6676  loss: 0.032128  loss_kpt: 0.032128  acc_pose: 0.937319
+2023/09/24 01:03:37 - mmengine - INFO - Epoch(train) [140][100/124]  base_lr: 1.000389e-04 lr: 1.000389e-04  eta: 0:00:14  time: 0.574419  data_time: 0.042970  memory: 6676  loss: 0.031969  loss_kpt: 0.031969  acc_pose: 0.933908
+2023/09/24 01:03:51 - mmengine - INFO - Exp name: rtmpose-m_deepfasion2-long-sleeved-dress-256x192_20230923_220340
+2023/09/24 01:03:51 - mmengine - INFO - Saving checkpoint at 140 epochs
+2023/09/24 01:04:02 - mmengine - INFO - Evaluating PCKAccuracy (normalized by ``"bbox_size"``)...
+2023/09/24 01:04:02 - mmengine - INFO - Evaluating AUC...
+2023/09/24 01:04:02 - mmengine - INFO - Evaluating EPE...
+2023/09/24 01:04:02 - mmengine - INFO - Epoch(val) [140][24/24]    PCK: 0.985372  AUC: 0.540305  EPE: 17.665066  data_time: 0.035553  time: 0.300167
